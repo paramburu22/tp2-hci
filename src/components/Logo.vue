@@ -12,13 +12,11 @@
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed&display=swap');
 .imgClass {
-  z-index: 1;
   height: 100px;
   width: 75px;
   margin-right: 10px;
 }
 .textClass {
-  z-index: 1;
   color: rgb(242, 242, 242);
   letter-spacing: 1.5px;
   font-size: 55px;
