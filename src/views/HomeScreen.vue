@@ -1,8 +1,19 @@
 <script setup>
+  import LogoComponent from '@/components/LogoComponent.vue';
 </script>
 
 <template>
   <v-container class="bg" fluid>
+    <v-navigation-drawer color="#146c94" >
+      <v-list-item>
+        <LogoComponent />
+      </v-list-item>
+      <v-list-item>AAAA</v-list-item>
+      <v-divider></v-divider>
+      <v-list-item>BBBB</v-list-item>
+      <v-divider></v-divider>
+      <v-list-item>CCCC</v-list-item>
+    </v-navigation-drawer>
   </v-container>
 </template>
 
@@ -14,14 +25,12 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url("@/assets/background.png");
+  background-image: url("@/assets/homeBackground.jpeg");
   background-size: cover;
   overflow-y: scroll;
 }
-.slogan_text {
-  color: rgb(242, 242, 242);
-  font-family: 'Varela Round', sans-serif;
-  font-size: 70px;
+.navigation {
+  background-color: #146c94;
 }
 
 .middle_container {
