@@ -1,9 +1,9 @@
 <script setup>
-  import Logo from '@/components/Logo.vue'
+  import Logo from '@/components/LogoComponent.vue'
 </script>
 
 <template>
-  <v-container class="bg">
+  <v-container class="bg" fluid>
     <v-row class="mt-5 responsive_header">
       <Logo />
     </v-row>
@@ -19,6 +19,7 @@
           <v-btn density="default" class="submit_button card_forms">Ingresar</v-btn>
           <a class="anchortag card_forms" href="https://www.w3schools.com">Olvidé mi contraseña</a>
           <a class="anchortag" href="https://www.w3schools.com">¿No tienes una cuenta?</a>
+          <RouterLink to="/asdasd">Go to Home</RouterLink>
         </v-card>
       </v-col>
     </v-row>
