@@ -12,9 +12,10 @@
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed&display=swap');
 .imgClass {
-  height: 100px;
-  width: 75px;
-  margin-right: 10px;
+  height: 90px;
+  width: 150px;
+  margin-right: -50px;
+  margin-left: -50px;
 }
 .textClass {
   color: rgb(242, 242, 242);
