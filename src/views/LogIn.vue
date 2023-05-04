@@ -3,6 +3,7 @@
 </script>
 
 <template>
+  <main>
   <v-container>
       <v-row class="mt-5 responsive_header">
           <Logo />
@@ -23,7 +24,7 @@
           </v-col>
         </v-row>
       </v-container>
-
+    </main>
 </template>
 
 <style scoped>

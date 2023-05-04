@@ -1,20 +1,19 @@
 <script setup>
-import { RouterView } from 'vue-router';
-
-  import Logo from '@/components/Logo.vue'
+import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div id="app">
-        <RouterView v-slot="{ Component }">
-            <transition name="slide" mode="out-in">
-                <component :is="Component" :key="$route.path" />
-            </transition>
-        </RouterView>
+  <header>
+    <div class="wrapper">
+      <nav>
+        <RouterLink to="/">Login</RouterLink>
+        <RouterLink to="/home">Home</RouterLink>
+      </nav>
     </div>
+  </header>
+
+  <RouterView />
 </template>
-
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
