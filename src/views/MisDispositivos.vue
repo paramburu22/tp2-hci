@@ -4,12 +4,11 @@
 const items = [
     { title: 'CASA' },
     { title: 'OFICINA' },
-    { title: 'AGREGAR NUEVO HOGAR' },
   ]
 </script>
 
 <template>
-    <v-container class="bg" fluid>
+  <v-container class="bg" fluid>
     <v-navigation-drawer  color="#146c94" >
       <v-list-item>
         <LogoComponent />
@@ -29,17 +28,28 @@ const items = [
         <v-col>
         </v-col>
         <v-col>
+          
             <v-menu>
                 <template v-slot:activator="{ props }">
-                    <v-btn color="primary" v-bind="props">HOGARES</v-btn>
+                    <v-btn size="large" class="dropdown" v-bind="props">
+                      HOGARES       
+                      <svg viewBox="0 0 1030 638" width="10">
+                      <path d="M1017 68L541 626q-11 12-26 12t-26-12L13 68Q-3 49 6 24.5T39 0h952q24 0 33 24.5t-7 43.5z" fill="#FFF"></path>
+                    </svg>
+                    </v-btn>
+                    
                 </template>
                 <v-list>
-                    <v-list-item
+                  <v-list-item
                     v-for="(item, index) in items"
                     :key="index"
-                    :value="index">
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item>
+                    :value="index" class="dropdown"
+                    >
+                    <v-list-item-content>
+                      <v-list-item-title variant="text">{{ item.title }}</v-list-item-title> 
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-btn :prepend-icon="'mdi-plus'" variant="text" class= "dropdown" border-radius="0px" block>AGREGAR</v-btn>  
                 </v-list>
             </v-menu>
       </v-col>
@@ -48,7 +58,10 @@ const items = [
         </v-col>
       </v-row>
     </div>
-    </v-container>
+    <div class="alarm">
+
+    </div>
+  </v-container>
 </template>
 
 <style scoped>
@@ -62,14 +75,6 @@ const items = [
   background-image: url("@/assets/homeBackground.jpeg");
   background-size: cover;
   overflow-y: scroll;
-}
-.navigation {
-  background-color: #146c94;
-}
-
-.middle_container {
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 .card_container {
@@ -93,26 +98,13 @@ const items = [
   border-radius: 20px;
   align-items: align-left
 }
-.anchortag {
-  font-size: 20px;
-}
 
-.input_text {
-  font-size: 20px;
-  width: 100%;
-}
-
-.card_title {
-  font-weight: lighter;
-  font-size: 36px;
-}
-.card_forms {
-  margin-bottom: 20px
-}
-.submit_button {
-  color: rgb(242, 242, 242);
-  background-color: #88c9f9;
-  width: 100%;
+.dropdown {
+  background-color: #96a0a4;
+  font-family: 'Varela Round', sans-serif;
+  font-size: medium;
+  color:#222d32;
+  border-radius: 0px;
 }
 
 @media (max-width: 950px) {
@@ -134,10 +126,14 @@ const items = [
     height: 11%;
     top: 0;
     left: 0;
-}
+} 
 
-.text_right {
-  text-align: right;
+.alarm {
+  color: #FFF;
+  font-family: 'Varela Round', sans-serif;
+  border-radius: 5px;
+  align-items: align-left;
+  margin-left: 1000px;
 }
 
 </style>
