@@ -59,13 +59,6 @@
   background-size: cover;
   overflow-y: scroll;
 }
-.navigation {
-  background-color: #146c94;
-}
-.middle_container {
-  padding-left: 20px;
-  padding-right: 20px;
-}
 .upper_bar {
   position: absolute;
   color: rgb(20, 108, 148);
@@ -83,7 +76,6 @@
   background-color: #29ABE2;
   padding-left: 5;
   align-items: align-left;
-  font-weight: bold;
 }
 .card_container2 {
   color: #FFF;
@@ -96,32 +88,5 @@
   font-family: 'Varela Round', sans-serif;
   border-radius: 20px;
   align-items: align-left
-}
-.anchortag {
-  font-size: 20px;
-}
-.input_text {
-  font-size: 20px;
-  width: 100%;
-}
-.card_title {
-  font-weight: lighter;
-  font-size: 36px;
-}
-.card_forms {
-  margin-bottom: 20px
-}
-.submit_button {
-  color: rgb(242, 242, 242);
-  background-color: #88c9f9;
-  width: 100%;
-}
-@media (max-width: 950px) {
-  .resposive_text {
-    text-align: center;
-  }f
-  .responsive_header {
-    justify-content: center;
-  }
 }
 </style>

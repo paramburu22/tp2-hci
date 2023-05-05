@@ -1,6 +1,7 @@
 <script setup>
   import Logo from '@/components/LogoComponent.vue'
   import { useRouter } from 'vue-router';
+
   const router = useRouter()
     function navigate() {
       return router.push('/home');
@@ -49,10 +50,12 @@
   font-family: 'Varela Round', sans-serif;
   font-size: 70px;
 }
+
 .middle_container {
   padding-left: 20px;
   padding-right: 20px;
 }
+
 .card_container {
   color: rgb(20, 108, 148);
   font-family: 'Varela Round', sans-serif;
@@ -62,10 +65,12 @@
 .anchortag {
   font-size: 20px;
 }
+
 .input_text {
   font-size: 20px;
   width: 100%;
 }
+
 .card_title {
   font-weight: lighter;
   font-size: 36px;
@@ -78,4 +83,5 @@
   background-color: #88c9f9;
   width: 100%;
 }
+
 </style>
