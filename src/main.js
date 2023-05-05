@@ -10,11 +10,22 @@ import App from './App.vue'
 // Composables
 import { createApp } from 'vue'
 
-// Plugins
-import { registerPlugins } from '@/plugins'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 const app = createApp(App)
 
-registerPlugins(app)
+const vuetify = createVuetify({
+  components,
+  directives,
+  icons: {
+    defaultSet: 'mdi', // This is already the default value - only for display purposes
+  },
+})
+
+
 
 app.mount('#app')
