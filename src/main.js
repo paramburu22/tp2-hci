@@ -6,9 +6,9 @@
 
 // Components
 import App from './App.vue'
-
 // Composables
 import { createApp } from 'vue'
+import router from './router'
 
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
@@ -26,6 +26,4 @@ const vuetify = createVuetify({
   },
 })
 
-
-
-app.mount('#app')
+app.use(vuetify).use(router).mount('#app')

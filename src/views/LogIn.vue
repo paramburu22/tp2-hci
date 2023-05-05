@@ -1,13 +1,16 @@
 <script setup>
-  import LogoComponent from '@/components/LogoComponent.vue'
+  import Logo from '@/components/LogoComponent.vue'
   import { useRouter } from 'vue-router';
-
+  const router = useRouter()
+    function navigate() {
+      return router.push('/home');
+  }
 </script>
 
 <template>
   <v-container class="bg" fluid>
     <v-row class="mt-5">
-      <LogoComponent />
+      <Logo />
     </v-row>
     <v-row class="justify-space-between middle_container mt-10 align-center">
       <v-col cols="7" class="title_container">
@@ -28,13 +31,51 @@
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 .bg {
   width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  background: url("@/assets/background.png") no-repeat center center;
+  background-image: url("@/assets/background.png");
   background-size: cover;
+  overflow-y: scroll;
+  padding-left: 60px;
+  padding-right: 60px;
+}
+.slogan_text {
+  color: rgb(242, 242, 242);
+  font-family: 'Varela Round', sans-serif;
+  font-size: 70px;
+}
+.middle_container {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.card_container {
+  color: rgb(20, 108, 148);
+  font-family: 'Varela Round', sans-serif;
+  border-radius: 20px;
+  background-color: #EDF1F4;
+}
+.anchortag {
+  font-size: 20px;
+}
+.input_text {
+  font-size: 20px;
+  width: 100%;
+}
+.card_title {
+  font-weight: lighter;
+  font-size: 36px;
+}
+.card_forms {
+  margin-bottom: 20px
+}
+.submit_button {
+  color: rgb(242, 242, 242);
+  background-color: #88c9f9;
+  width: 100%;
 }
 </style>
