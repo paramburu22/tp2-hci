@@ -21,12 +21,19 @@
       <v-btn width="210" prepend-icon="mdi-logout" variant="text" class="close_button text-left ml-5 mt-15 mb-5" style="justify-content: flex-start">Cerrar Sesión</v-btn>
     </div>
   </v-navigation-drawer>
+  <v-app-bar height="80" class="app_bar_content">
+    <HomesButtonComponent v-if="isHome"/>
+    <template v-slot:append>
+      <v-btn icon="mdi-account"/>
+    </template>
+  </v-app-bar>
 </template>
 
 <script setup>
   import LogoComponent from './LogoComponent.vue';
+  import HomesButtonComponent from './HomesButtonComponent.vue';
   import { useRouter } from 'vue-router';
-  import { ref, defineProps } from 'vue';
+  import { ref, computed, defineProps } from 'vue';
 
   const props = defineProps(['screen']);
 
@@ -53,10 +60,13 @@
     },
   ]);
 
-  const router = useRouter()
-    function navigate(route) {
-      return router.push(`/${route.toLowerCase()}`);
+  const router = useRouter();
+
+  function navigate(route) {
+    return router.push(`/${route.toLowerCase()}`);
   }
+
+  const isHome = computed(() => useRouter().currentRoute.value.path !== '/home');
 </script>
 
 <style scoped>
@@ -78,12 +88,16 @@
   border-radius: 20px;
 }
 
-.nav_content{
+.nav_content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
 }
 
+.app_bar_content {
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+}
 </style>
 
