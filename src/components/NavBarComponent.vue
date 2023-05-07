@@ -14,7 +14,7 @@
           :prepend-icon="item.icon"
           variant="text"
           class="menu_buttons"
-          :class="props.screen === item.routeName ? 'selected' : ''"
+          :class="router.currentRoute.value.name === item.routeName ? 'selected' : ''"
         >{{ item.displayName }}
         </v-btn>
       </v-list>
@@ -33,9 +33,8 @@
   import LogoComponent from './LogoComponent.vue';
   import HomesButtonComponent from './HomesButtonComponent.vue';
   import { useRouter } from 'vue-router';
-  import { ref, computed, defineProps } from 'vue';
+  import { ref, computed } from 'vue';
 
-  const props = defineProps(['screen']);
 
   const options = ref([
     {
@@ -66,7 +65,7 @@
     return router.push(`/${route.toLowerCase()}`);
   }
 
-  const isHome = computed(() => useRouter().currentRoute.value.path !== '/home');
+  const isHome = computed(() => router.currentRoute.value.path !== '/home');
 </script>
 
 <style scoped>
