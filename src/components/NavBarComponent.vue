@@ -24,7 +24,7 @@
   <v-app-bar height="80" class="app_bar_content">
     <HomesButtonComponent v-if="isHome"/>
     <template v-slot:append>
-      <v-btn icon="mdi-account"/>
+      <v-btn icon="mdi-account" @click="navigate('usuario')"/>
     </template>
   </v-app-bar>
 </template>
