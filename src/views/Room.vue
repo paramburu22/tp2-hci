@@ -5,8 +5,12 @@ const devices = [
     /*{ title: 'Luz 2', icon:'mdi-lightbulb' ,state_light: 'Apagado', state_color:'purple', intensity:'50'},*/
 ]
 import { ref } from 'vue';
-import { defineComponent } from 'vue'
-      const menu = ref(false);
+const menu = ref(false);
+const light1 = ref({
+  red: 0,
+  blue: 0,
+  green: 0,
+})
 
 const menu2 = {
   data() {
@@ -60,7 +64,7 @@ const menu2 = {
                         </template>
                     </v-list-item>
                         <v-list class="horizontal_v_list">
-                            <v-list-item class="horizontal_v_list_card flex-column text-left"
+                            <v-list-item active="false" class="horizontal_v_list_card flex-column text-left"
                                 v-for="(item, index) in devices"
                                     :key="index"
                                     :value="index"
@@ -101,21 +105,21 @@ const menu2 = {
                                                 <v-list-item class="menu2" >
                                                     <v-row align="center" justify="space-between" no-gutters>
                                                         <v-card width="400" height="370" style="margin: auto">
-                                                            <v-responsive :style="{ background: `rgb(${red}, ${green}, ${blue})` }" height="150px"></v-responsive>
+                                                            <v-responsive :style="{ background: `rgb(${light1.red}, ${light1.green}, ${light1.blue})` }" height="150px"></v-responsive>
                                                             <v-card-text class="menu2">
-                                                                    <v-slider v-model="red" :max="255" :step="1" label="R" hide-details class="ma-4">
+                                                                    <v-slider v-model="light1.red" :max="255" :step="1" label="R" hide-details class="ma-4">
                                                                         <template v-slot:append>
-                                                                            <v-text-field v-model="red" type="number" style="width: 80px" density="compact" hide-details variant="outlined" ></v-text-field>
+                                                                            <v-text-field v-model="light1.red" type="number" style="width: 80px" density="compact" hide-details variant="outlined" ></v-text-field>
                                                                         </template>
                                                                     </v-slider>
-                                                                    <v-slider v-model="green" :max="255" :step="1" label="G" hide-details class="ma-4">
+                                                                    <v-slider v-model="light1.green" :max="255" :step="1" label="G" hide-details class="ma-4">
                                                                         <template v-slot:append>
-                                                                            <v-text-field v-model="green" type="number" style="width: 80px" density="compact" hide-details variant="outlined" ></v-text-field>
+                                                                            <v-text-field v-model="light1.green" type="number" style="width: 80px" density="compact" hide-details variant="outlined" ></v-text-field>
                                                                         </template>
                                                                     </v-slider>
-                                                                    <v-slider v-model="blue" :max="255" :step="1" label="B" hide-details class="ma-4">
+                                                                    <v-slider v-model="light1.blue" :max="255" :step="1" label="B" hide-details class="ma-4">
                                                                         <template v-slot:append>
-                                                                            <v-text-field v-model="blue" type="number" style="width: 80px" density="compact" hide-details variant="outlined" ></v-text-field>
+                                                                            <v-text-field v-model="light1.blue" type="number" style="width: 80px" density="compact" hide-details variant="outlined" ></v-text-field>
                                                                         </template>
                                                                     </v-slider>
                                                             </v-card-text>
