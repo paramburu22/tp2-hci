@@ -1,5 +1,12 @@
 <script setup>
   import LogoComponent from '@/components/LogoComponent.vue';
+  import NavBarComponent from '@/components/NavBarComponent.vue';
+  import { useRouter } from 'vue-router';
+
+  const router = useRouter()
+    function navigate() {
+      return router.push('/user');
+  }
   const items1 = [
     { title: 'Casa'},
     { title: 'Oficina' },
@@ -25,39 +32,13 @@
 
 
 <template>
-  <v-container class="bg" fluid>
-    <v-navigation-drawer  color="#146c94" >
-      <v-list-item>
-        <LogoComponent />
-      </v-list-item>
-      <v-col mb-15 class="flex-column text-left d-flex" justify="space-between">
-        <v-row mb-5>
-          <v-btn width="210" prepend-icon="mdi-home" variant="text" class="card_container text-left ml-5 mt-10 mb-5" style="justify-content: flex-start">Inicio</v-btn>
-          <v-btn width="210" prepend-icon="mdi-devices" variant="text" class="card_container2 text-left ml-5 mt-5 mb-5" style="justify-content: flex-start">Mis Dispositivos</v-btn>
-          <v-btn width="210" prepend-icon="mdi-clipboard-check-multiple" variant="text" class="card_container2 text-left ml-5 mt-5 mb-5" style="justify-content: flex-start">Mis Rutinas</v-btn>
-          <v-btn width="210" prepend-icon="mdi-help-circle-outline" variant="text" class="card_container2 text-left ml-5 mt-5 mb-16" style="justify-content: flex-start">Ayuda</v-btn>
-          <v-btn width="210" prepend-icon="mdi-close" variant="text" class="flex-column align-self-end card_container3 text-left ml-5 mt-16" style="justify-content: flex-start" >Cerrar</v-btn>
-        </v-row>  
-      </v-col>
-    </v-navigation-drawer>
-    <div class="upper_bar">
-      <v-toolbar>
-          <v-spacer></v-spacer>
-          <v-btn icon  class="mt-5">
-            <v-icon color="#146C94">mdi-account</v-icon>
-          </v-btn>
-      </v-toolbar>
-    </div>
-    <div>
-      <v-row cols="6">
-        <v-col>
-          <h2>FAVORITOS</h2>
-        </v-col>
-        <v-col>
-          <h2 class="title2">RECIENTES</h2>
-        </v-col>
+  <v-layout>
+    <NavBarComponent />
+      <v-main class="bg"> 
+        <v-row>
+        <h2>FAVORITOS</h2>
+        <h2 class="title2">RECIENTES</h2>
       </v-row>
-    </div>
     <v-row>
       <v-card class="card_container4 card_c1">
         <v-row>
@@ -144,7 +125,16 @@
       </v-card>
 
 </v-row>
-</v-container>
+      </v-main>
+  </v-layout>
+    <!--<div class="upper_bar">
+      <v-toolbar>
+          <v-spacer></v-spacer>
+          <v-btn icon  class="mt-5">
+            <v-icon color="#146C94"  @click="navigate">mdi-account</v-icon>
+          </v-btn>
+      </v-toolbar>
+    </div> -->
 </template>
 
 <style scoped>
@@ -192,7 +182,7 @@
   height: 60px
 }
 .card_c1{
-  margin-left: 280px;
+  margin-left: 70px;
   width: 700px;
 }
 .card_c2{
@@ -226,12 +216,12 @@ h2{
   color: #FFF;
   font-family: 'Varela Round', sans-serif;
   font-size: 32px;
-  margin-top: 115px;
-  margin-bottom: 2px;
-  margin-left: 300px;
+  margin-top: 60px;
+  margin-bottom: 10px;
+  margin-left: 90px;
 }
 .title2{
-  margin-left: 330px;
+  margin-left: 550px;
 }
 .horizontal_v_list {
   display: flex;

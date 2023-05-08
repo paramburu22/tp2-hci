@@ -40,7 +40,7 @@
     {
       icon: "mdi-home",
       displayName: "Inicio",
-      routeName:"inicio",
+      routeName:"home",
     },
     {
       icon: "mdi-devices",
