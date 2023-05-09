@@ -50,6 +50,7 @@ export default {
   height: 50px; 
   width: 280px;
   box-shadow: 5px 9px 0px 0px #146C94;
+  margin-bottom: 30px;
 }
 .text {
     color: #265187;
