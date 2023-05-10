@@ -9,6 +9,7 @@ import App from './App.vue'
 // Composables
 import { createApp } from 'vue'
 import router from './router'
+import { createPinia } from 'pinia'
 
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
@@ -18,6 +19,8 @@ import * as directives from 'vuetify/directives'
 
 const app = createApp(App)
 
+const pinia = createPinia()
+
 const vuetify = createVuetify({
   components,
   directives,
@@ -26,4 +29,4 @@ const vuetify = createVuetify({
   },
 })
 
-app.use(vuetify).use(router).mount('#app')
+app.use(vuetify).use(router).use(pinia).mount('#app')
