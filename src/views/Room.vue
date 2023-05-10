@@ -20,7 +20,7 @@ const menu = ref(false);
         <v-main class="bg"> 
             <v-container>
                <v-card class="card_container">
-                    <v-list-item class="mt-2">
+                    <v-list-item>
                         <v-card-item title="Habitación 1"/>
                         <template v-slot:append>
                             <v-btn variant="text" size="x-large" icon>

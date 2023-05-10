@@ -68,7 +68,7 @@
       <v-text-field type="input" v-model="roomName" placeholder="Ejemplo: Cocina" clearable :rules="[required]"/>
       <v-row class="buttons_container" no-gutters>
         <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
-        <v-btn tonal color="blue" @click="createRoom">Crear</v-btn>
+        <v-btn tonal color="blue" @click="createRoom()">Crear</v-btn>
       </v-row>
     </v-card>
   </v-dialog>

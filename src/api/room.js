@@ -5,8 +5,8 @@ class RoomApi {
         return `${Api.baseUrl}/rooms${slug ? `/${slug}` : ""}`;
     }
 
-    static async add(room) {
-        return await Api.post(RoomApi.getUrl(), room);
+    static async add(room, controller) {
+        return await Api.post(RoomApi.getUrl(), room, controller);
     }
 
     static async modify(room, controller) {
