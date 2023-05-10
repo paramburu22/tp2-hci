@@ -19,7 +19,6 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
-    "@esbuild/win32-x64": "^0.17.18",
     "@mdi/font": "^7.2.96",
     "@rushstack/eslint-patch": "^1.2.0",
     "@vitejs/plugin-vue": "^4.0.0",
