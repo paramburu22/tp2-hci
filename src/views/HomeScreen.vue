@@ -57,7 +57,7 @@
                   </v-container>
                   <v-container>
                     <v-list class="favourites_row">
-                      <v-list-item height="80" class="favourites_card"
+                      <v-list-item class="pt-2 pb-2 favourites_card"
                         v-for="(item,index) in items2"
                         :key="index"
                         :value="index"
@@ -72,7 +72,7 @@
                   </v-container>
                   <v-container>
                     <v-list class="favourites_row">
-                        <v-list-item height="120" class="favourites_card"
+                        <v-list-item class="pt-2 pb-2 favourites_card"
                           v-for="(item,index) in items3"
                           :key="index"
                           :value="index"
