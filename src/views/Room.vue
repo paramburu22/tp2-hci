@@ -1,8 +1,8 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
 const devices = ref([
-{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', statelight: 'Apagada', red: 50, blue: 0, green: 0 , cardColor: 'rgb(0, 0, 0)'},
-{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', statelight: 'Apagada', red: 50, blue: 0, green: 0, cardColor: 'rgb(0, 0, 0)' },
+{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', statelight: 'Apagada', red: 0, blue: 0, green: 0 , cardColor: 'rgb(0, 0, 0)', intensity: 0},
+{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', statelight: 'Apagada', red: 0, blue: 0, green: 0, cardColor: 'rgb(0, 0, 0)', intensity: 0 },
 ])/*
 var devices = [
     { menu: ref(false), title: 'Luz 1', icon:'mdi-lightbulb' ,state_light: 'Apagado', red: 50, blue:0, green:0, intensity:'50%'},
@@ -20,7 +20,7 @@ const menu = ref(false);
         <v-main class="bg"> 
             <v-container>
                <v-card class="card_container">
-                    <v-list-item>
+                    <v-list-item class="mt-2">
                         <v-card-item title="Habitación 1"/>
                         <template v-slot:append>
                             <v-btn variant="text" size="x-large" icon>
@@ -39,7 +39,7 @@ const menu = ref(false);
                                     :key="index"
                                     :value="index"
                                 >
-                                <v-list-item >
+                                <v-list-item class="mb-2">
                                 <v-list-item-title flexibility="space-between"  v-text="item.title"></v-list-item-title> 
                                 <template v-slot:prepend>
                                         <v-icon color="#146C94">{{item.icon}}</v-icon>
@@ -58,13 +58,12 @@ const menu = ref(false);
                                 </v-list-item>
                             </v-row>
                                 <v-divider></v-divider>
-                                <v-list-item class="mt-4 mb-4">
+                                <v-list-item>
                                 <!--<v-list-subtitle>{{ item.state_color }}</v-list-subtitle>-->
-                                <div>
-                                    <v-row>
+                                <v-row class="mb-2 mt-2 ml-1">
                                     <v-menu  v-model="item.open" :close-on-content-click="false" location="end" >
                                         <template v-slot:activator="{ props }" v-slot:prepend>
-                                            <v-btn :style="{ background: `rgb(${item.red}, ${item.green}, ${item.blue})` }" class="container_button" v-bind="props"></v-btn>
+                                            <v-btn :style="{ background: `rgb(${item.red}, ${item.green}, ${item.blue})` }" elevation="4" class="mt-2 mb-2"  v-bind="props"></v-btn>
                                         </template>
                                         <div>
                                         <v-card min-width="250">
@@ -109,16 +108,15 @@ const menu = ref(false);
                                         </div>
                                     </v-menu>
                                     <v-list-item>
-                                        <p class="text_rgb mr-1">R: {{ item.red }} ; G: {{ item.green }} ; B: {{ item.blue }}</p>
+                                        <p class="text_rgb ml-2">R: {{ item.red }} ; G: {{ item.green }} ; B: {{ item.blue }}</p>
                                     </v-list-item>
                                 </v-row>
-                                </div>
                             </v-list-item>
                             <v-divider></v-divider>
                             <v-list-item class="mt-5 mb-3">
                             <v-list-subtitle>Intensidad: </v-list-subtitle>
-                            <v-list-subtitle>{{ item.intensity }}</v-list-subtitle>
-                                <v-slider width="30px" thumb-label="always"></v-slider>
+                            <v-list-subtitle class="text_intensity ml-1 mb-2">{{ item.intensity }}%</v-list-subtitle>
+                                <v-slider class="ml-5 mr-5" width="30px" v-model="item.intensity" :max="100" :step="1"></v-slider>
                             </v-list-item>
                             </v-list-item>
                             <v-list-item>
@@ -179,10 +177,9 @@ h2{
   border-radius: 20px;
   opacity: 1 !important;
   margin-left: 30px;
-  width: 250px;
+  width: 270px;
   box-shadow: 3px 4px 5px #6394a2;
   transform: translateZ(0);
-  height: 400px;
   
 }
 
@@ -192,14 +189,6 @@ h2{
   background-color: xwhite;
 }
 
-.container2{
-    background-color: #6f6d76;
-    margin-top: 20px;
-    margin-left: 100px;
-    border-radius: 20px;
-    height: 520px;
-    width: 800px;
-  }
   .add-button-container {
   position: fixed;
   bottom: 16px;
@@ -209,6 +198,11 @@ h2{
 .text_rgb{
     font-family: 'Varela Round', sans-serif;
     font-size: 10px;
+    color:  #76797c;
+}
+.text_intensity{
+    font-family: 'Varela Round', sans-serif;
+    font-size: 14px;
     color:  #76797c;
 }
 </style>
