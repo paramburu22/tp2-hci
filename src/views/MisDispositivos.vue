@@ -3,7 +3,7 @@
   import AlarmComponent from '../components/AlarmComponent.vue';
 
   import { useRouter } from 'vue-router';
-  import { ref, computed } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { useRoomStore } from '@/stores/roomStore';
   import { Room } from '@/api/room'
 
@@ -14,6 +14,10 @@
   const open = ref(false);
   const result = ref(null);
   const roomName = ref(null);
+  const snackbar = ref(false);
+  const toastText = ref(null);
+  const controller = ref(null);
+  const loading = ref(null);
 
   function toggleOpen() {
     open.value = !open.value;
@@ -23,20 +27,52 @@
     result.value = JSON.stringify(r, null, 2);
   }
 
+  function setToastTest(text) {
+    toastText.value = text;
+  }
+
+  function setSnackBarTrue() {
+    snackbar.value = true;
+  } 
+
   async function createRoom() {
-    const room = new Room(null, roomName.value);
+    const capitalizedRoom = roomName.value.charAt(0).toUpperCase() + roomName.value.slice(1)
+    const room = new Room(null, capitalizedRoom);
 
     try {
       room.value = await roomStore.add(room);
       setResult(room.value);
-      toggleOpen();
+      setToastTest(`Habitación creada "${capitalizedRoom}" con éxito`);
     } catch (e) {
       setResult(e);
+      setToastTest(`Error al crear la habitación "${capitalizedRoom}"`);
+    } finally {
+      toggleOpen();
+      setSnackBarTrue();
+      roomName.value = null;
     }
   }
 
-  function navigate() {
-    return router.push('/room');
+  async function getAllRooms() {
+    try {
+      loading.value = true;
+      controller.value = new AbortController()
+      const rooms = await roomStore.getAll(controller.value)
+      controller.value = null
+      setResult(rooms)
+    } catch (e) {
+      setResult(e)
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  onMounted(async () => {
+    await getAllRooms();
+  })
+
+  function navigate(roomId) {
+    return router.push(`/room/${roomId}`);
   }
 </script>
 
@@ -48,11 +84,18 @@
         <AlarmComponent/>
       </v-container>
       <v-spacer></v-spacer>
-      <v-container>
-        <v-card class="card_container" @click="navigate">
-          <v-card-title class="card_content">Habitación 1</v-card-title>
-          <v-icon size="30" color="#146C94">mdi-heart</v-icon>
-        </v-card>
+      <v-container class="px-5">
+        <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
+        <h2 v-else-if="roomStore.rooms.length == 0" class="no_rooms_text">No hay habitaciones creadas</h2>
+        <v-row v-else class="rooms_container" cols="2">
+          <v-card v-for="(room) in roomStore.rooms.reverse()"
+            class="card_container" 
+            @click="navigate(room.id)"
+          >
+            <v-card-title class="card_content">{{room.name}}</v-card-title>
+            <v-icon size="30" color="#146C94">mdi-heart</v-icon>
+          </v-card>
+        </v-row>
       </v-container>
       <v-container>
         <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle</v-icon>
@@ -72,6 +115,22 @@
       </v-row>
     </v-card>
   </v-dialog>
+
+  <v-snackbar
+    v-model="snackbar"
+    timeout=1000
+    color="blue"
+  >
+    {{ toastText }}
+    <template v-slot:actions>
+      <v-btn
+        variant="text"
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <style scoped>
@@ -101,7 +160,7 @@
   font-family: 'Varela Round', sans-serif;
   border-radius: 20px;
   height: 75px; 
-  width: 350px;
+  width: 300px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -111,11 +170,6 @@
   font-family: 'Varela Round', sans-serif;
   font-size: 25px;
   font-weight: 100;
-}
-.add_container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
 }
 
 .add_icon {
@@ -129,6 +183,26 @@
 .buttons_container {
   display: flex;
   justify-content: space-between;
+}
+
+.rooms_container {
+  gap: 25px;
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.no_rooms_text {
+  color: #265187;
+  font-family: 'Varela Round', sans-serif;
+  font-size: 32px;
+  text-align: center;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px;
 }
 
 </style>
