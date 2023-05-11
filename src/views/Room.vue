@@ -30,6 +30,10 @@ const devicesOptions = ref([
     name:'Heladera',
   }
 ]);
+const devices = ref([
+{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0},
+{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0 },
+])
 
 const componentToHex = (c) => {
   const hex = c.toString(16);
@@ -117,7 +121,11 @@ const updateColor = (device) => {
                                 <v-list-item >
                                     <v-list-item  v-text="item.statelight"></v-list-item>
                                     <template v-slot:append>
-                                        <v-switch class="mt-5"></v-switch>
+                                        <v-switch class="mt-1 mb-1" v-model="item.model" hide-details
+                                            true-value="Prendido"
+                                            false-value="Apagado"
+                                            :label="`${item.model}`">
+                                        </v-switch>
                                     </template>
                                 </v-list-item>
                             </v-row>
@@ -164,7 +172,7 @@ const updateColor = (device) => {
                                         </v-list>
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
-                                            <v-btn color="primary" variant="text" v-model="item.open" :close-on-content-click="true">Actualizar</v-btn>
+                                            <v-btn color="primary" variant="text"  @click="toggleOpen" >Actualizar</v-btn>
                                         </v-card-actions>
                                     </v-card>
                                 </div>
@@ -258,7 +266,6 @@ const updateColor = (device) => {
   width: 270px;
   box-shadow: 3px 4px 5px #6394a2;
   transform: translateZ(0);
-  
 }
 
 .buttons_container {
