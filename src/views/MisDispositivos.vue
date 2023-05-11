@@ -18,6 +18,7 @@
   const toastText = ref(null);
   const controller = ref(null);
   const loading = ref(null);
+  const toastColor = ref(null);
 
   function toggleOpen() {
     open.value = !open.value;
@@ -27,7 +28,8 @@
     result.value = JSON.stringify(r, null, 2);
   }
 
-  function setToastTest(text) {
+  function setToast(text, color) {
+    toastColor.value = color;
     toastText.value = text;
   }
 
@@ -42,10 +44,10 @@
     try {
       room.value = await roomStore.add(room);
       setResult(room.value);
-      setToastTest(`Habitación creada "${capitalizedRoom}" con éxito`);
+      setToast(`Habitación creada "${capitalizedRoom}" con éxito`, "blue");
     } catch (e) {
       setResult(e);
-      setToastTest(`Error al crear la habitación "${capitalizedRoom}"`);
+      setToast(`Error al crear la habitación "${capitalizedRoom}"`, "#FF6666");
     } finally {
       toggleOpen();
       setSnackBarTrue();
@@ -118,18 +120,11 @@
 
   <v-snackbar
     v-model="snackbar"
-    timeout=1000
-    color="blue"
+    timeout=2000
+    :color="toastColor"
+    width="auto"
   >
     {{ toastText }}
-    <template v-slot:actions>
-      <v-btn
-        variant="text"
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </template>
   </v-snackbar>
 </template>
 
