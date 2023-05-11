@@ -34,7 +34,7 @@ const menu = ref(false);
                         </template>
                     </v-list-item>
                         <v-list class="horizontal_v_list d-flex align-start">
-                            <v-list-item active="false" class="horizontal_v_list_card flex-column text-left"
+                            <v-list-item active="false" class="horizontal_v_list_card mt-2 flex-column text-left"
                                 v-for="(item, index) in devices"
                                     :key="index"
                                     :value="index"
@@ -186,7 +186,7 @@ h2{
 .list_card{
     font-family: 'Varela Round', sans-serif;
   align-items: flex-start;
-  background-color: xwhite;
+  background-color: white;
 }
 
   .add-button-container {

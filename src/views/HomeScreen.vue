@@ -115,14 +115,6 @@
       </v-container>
     </v-main>
   </v-layout>
-    <!--<div class="upper_bar">
-      <v-toolbar>
-          <v-spacer></v-spacer>
-          <v-btn icon  class="mt-5">
-            <v-icon color="#146C94"  @click="navigate">mdi-account</v-icon>
-          </v-btn>
-      </v-toolbar>
-    </div> -->
 </template>
 
 <style scoped>

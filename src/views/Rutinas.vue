@@ -28,8 +28,26 @@ const devices = [
       subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
       states:['Intensidad: 23%', 'Color: Violeta']
     },
+    {
+      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
+      states:['Intensidad: 23%', 'Color: Violeta']
+    },
     ] },
     { title: 'Rutina 3', acciones: [
+    {
+      subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
+      states:['Intensidad: 23%', 'Color: Violeta']
+    },
+    {
+      subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
+      states:['24º', '0º horizontal']
+    },
+    {
+      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
+      states:['Intensidad: 23%', 'Color: Violeta']
+    },
+    ] },
+    { title: 'Rutina 4', acciones: [
     {
       subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
       states:['Intensidad: 23%', 'Color: Violeta']
@@ -99,50 +117,62 @@ const menu2 = {
                           </v-btn>
                       </template>
                   </v-list-item>
-                      <v-list class="horizontal_v_list">
-                          <v-list-item active="false" class="horizontal_v_list_card flex-column text-left"
+                      <v-list class="horizontal_v_list d-flex align-start overflow-y-auto" >
+                          <v-list-item active="false" class="horizontal_v_list_card"
                               v-for="(item, index) in devices"
                                   :key="index"
                                   :value="index"
                               >
-                              <v-list-item align="center">
-                                <v-list-item-title  ml-10 v-text="item.title"></v-list-item-title> 
+                              <v-list-item >
+                                <v-list-item-title flexibility="space-between"  v-text="item.title"></v-list-item-title> 
+                                <template v-slot:prepend>
+                                        <v-icon color="#146C94">mdi-heart</v-icon>
+                                </template>
                                 <template v-slot:append>
-                                <v-switch></v-switch>
-                              </template>
-                              <v-divider></v-divider>
-                              </v-list-item>
-
-                          <v-list-text active="false" class="d-flex align-start ml-1 mb-2 vertical_v_list_c1 flex-column text-left"
+                                    <v-switch class="mt-4"></v-switch>
+                                </template>
+                                </v-list-item>
+                                <v-divider></v-divider>
+                                
+                          <v-list-item active="false" class=" mt-2 mb-2 vertical_v_list_c1 d-flex align-start "
                               v-for="(elem, index) in item.acciones"
                                   :key="index"
                                   :value="index"
                               >
-                              <v-list-item >
-                                <v-list-item-title>
-                                    {{ elem.subtitle }}
-                                  </v-list-item-title>
-                                  <v-list-item-subtitle>
-                                    {{ elem.from }}
-                                  </v-list-item-subtitle>
-                                <template v-slot:prepend>
+                                <v-list-item >
+                                  <template v-slot:prepend>
                                         <v-icon color="#146C94">{{elem.icon}}</v-icon>
-                                </template>
-                                <template v-slot:append>
+                                    </template>
+                                  <v-row>
                                   <v-col>
-                                    <v-text class="details"
-                                    v-for="(state, index) in elem.states"
-                                  :key="index"
-                                  :value="index">
-                                  {{ state }}
-                                  </v-text>>
+                                    <v-list-item-title>{{ elem.subtitle }}</v-list-item-title>
+                                    <v-list-item-subtitle>{{ elem.from }}</v-list-item-subtitle>
+                                  </v-col><!--
+                                  <v-col>
+                                    <template v-slot:prepend>
+                                        <v-icon color="#146C94">{{elem.icon}}</v-icon>
+                                    </template>
                                   </v-col>
-                                </template>
                                 
+                                   <v-col>
+                                    <v-list-item-text  mt-1 class="details mb-1" v-text="elem.states"></v-list-item-text>
+                                   </v-col>-->
+                                   <v-col >
+                                    <v-list-item-text active="false" class="mt-1 mb-2 vertical_v_list_c1 "
+                                    v-for="(elem2, index) in elem.states"
+                                      :key="index"
+                                      :value="index"
+                                   >
+                                   <p class="details">{{ elem2 }}</p>
+                                  </v-list-item-text>
+                                   </v-col>
+                                  </v-row>
                                 </v-list-item>
-                          </v-list-text>
+
+                              </v-list-item>
+                            
                           </v-list-item>
-                      </v-list>
+                      </v-list> 
               </v-card> 
           </v-container> 
       </v-main>
@@ -181,7 +211,6 @@ h2{
 }
 
 .horizontal_v_list {
-  display: flex;
   flex-direction: row;
   background-color: transparent;
   opacity: 1 !important;
@@ -193,41 +222,20 @@ h2{
   border-radius: 20px;
   opacity: 1 !important;
   margin-left: 30px;
-  width: 250px;
+  width: 300px;
   box-shadow: 3px 4px 5px #6394a2;
   transform: translateZ(0);
-  height: 300px;
+  height: 100%;
+
   
 }
 
-.list_card{
-  font-family: 'Varela Round', sans-serif;
-  align-items: flex-start;
-  background-color: xwhite;
-}
-
-.container2{
-    background-color: #6f6d76;
-    margin-top: 20px;
-    margin-left: 100px;
-    border-radius: 20px;
-    height: 520px;
-    width: 800px;
-  }
-  .vertical_v_list {
-  background-color: transparent;
-  margin-right: 10px;
-  margin-left: 10px;
-  margin-top: 15px;
-  height: 100%;
-}
 .vertical_v_list_c1{
+  display:flex;
   font-family: 'Varela Round', sans-serif;
   background-color: transparent;
   border-radius: 20px;
   opacity: 1 !important;
-  margin-left: 30px;
-  width: 200px;
   transform: translateZ(0);
 }
 
@@ -235,5 +243,6 @@ h2{
   font-family: 'Varela Round', sans-serif;
   font-size: 8px;
 }
+
 
 </style>
