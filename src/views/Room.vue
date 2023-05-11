@@ -1,10 +1,37 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
+import { ref, computed } from 'vue';
+
+
+const open = ref(false);
+const deviceName = ref(null);
+const deviceType = ref(null);
+const devicesOptions = ref([
+  {
+    id: 'go46xmbqeomjrsjr',
+    name: 'Lampara',
+  },
+  {
+    id: 'li6cbv5sdlatti0j',
+    name: 'Aire Acondicionado',
+  },
+  {
+    id: 'mxztsyjzsrq7iaqc',
+    name: 'Alarma',
+  },
+  {
+    id: 'ofglvd9gqx8yfl3l',
+    name: 'Aspiradora',
+  },
+  {
+    id:'rnizejqr2di0okho',
+    name:'Heladera',
+  }
+]);
 const devices = ref([
 { open: false, title: 'Luz 1', icon:'mdi-lightbulb', statelight: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0},
 { open: false, title: 'Luz 2', icon:'mdi-lightbulb', statelight: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0 },
 ])
-import { ref, computed } from 'vue';
 
 const componentToHex = (c) => {
   const hex = c.toString(16);
@@ -27,6 +54,18 @@ const computedDevices = computed(() => {
 
   return devices.value;
 });
+
+function toggleOpen() {
+    open.value = !open.value;
+    deviceName.value = null;
+    deviceType.value = null;
+}
+
+  function setSelectedDevice (device) {
+    deviceTypes.value = device;
+  }
+    
+  
 </script>
 
 <template>
@@ -135,7 +174,7 @@ const computedDevices = computed(() => {
                 </v-list-item>
                 <v-list-item>
                     <v-footer class="add-button-container" absolute>
-                        <v-btn variant="flat" icon="mdi-plus-circle-outline" size="50px"></v-btn>   <!-- hay q cambiar la accion del click-->
+                        <v-btn variant="flat" icon="mdi-plus-circle-outline" size="50px" @click="toggleOpen"></v-btn>   <!-- hay q cambiar la accion del click-->
                     </v-footer>
                 </v-list-item>
             </v-list> 
@@ -143,6 +182,26 @@ const computedDevices = computed(() => {
         </v-container> 
         </v-main>
     </v-layout>
+    <v-dialog
+        v-model="open"
+        width="auto"
+    >
+        <v-card class="pa-5" width="600">
+        <h2 class="dialog_title mb-5">Creando Dispositivo</h2>
+        <v-text-field type="input" v-model="deviceName" placeholder="Nombre..." clearable :rules="[required]"/>
+        <v-select
+            v-model="deviceType"
+            :items="devicesOptions"
+            item-title="name"
+            item-value="id"
+            label="Seleccione un dispositivo"
+        />
+        <v-row class="buttons_container" no-gutters>
+            <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
+            <v-btn tonal color="blue" @click="toggleOpen">Crear</v-btn>
+        </v-row>
+        </v-card>
+    </v-dialog>
 </template>
 
 <style scoped>
@@ -167,15 +226,12 @@ const computedDevices = computed(() => {
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }
-h2{
-  color: #FFF;
-  font-family: 'Varela Round', sans-serif;
-  font-size: 32px;
-  margin-top: 115px;
-  margin-bottom: 2px;
-  margin-left: 300px;
-}
 
+.dialog_title {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 26px;
+  color: #265187;
+}
 .horizontal_v_list {
   display: flex;
   flex-direction: row;
@@ -195,10 +251,9 @@ h2{
   
 }
 
-.list_card{
-    font-family: 'Varela Round', sans-serif;
-  align-items: flex-start;
-  background-color: white;
+.buttons_container {
+  display: flex;
+  justify-content: space-between;
 }
 
   .add-button-container {
