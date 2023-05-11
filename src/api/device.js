@@ -29,7 +29,7 @@ class Device {
           this.id = id;
       }
       this.name = name;
-      this.type = type;
+      this.type = { id: type };
       this.state = state;
       this.room = room;
     }

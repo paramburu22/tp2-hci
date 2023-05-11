@@ -32,6 +32,9 @@ class Room {
     toString() {
         return JSON.stringify(this, null, 2);
     }
+    getId(){
+        return this.id
+    }
 }
 
 export { RoomApi, Room };

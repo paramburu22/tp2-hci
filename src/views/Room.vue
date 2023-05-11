@@ -1,10 +1,21 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useDeviceStore } from '@/stores/deviceStore';
+import { Device } from '@/api/device';
+import { Room } from '@/api/room';
+
+const deviceStore = useDeviceStore();
 
 const open = ref(false);
 const deviceName = ref(null);
 const deviceType = ref(null);
+const snackbar = ref(false);
+const toastText = ref(null);
+const controller = ref(null);
+const loading = ref(null);
+const toastColor = ref(null);
+
 const devicesOptions = ref([
   {
     id: 'go46xmbqeomjrsjr',
@@ -58,6 +69,54 @@ const toggleFaved = (device) => {
     device.faved = !device.faved;
 };
 
+function toggleOpen() {
+    open.value = !open.value;
+    deviceName.value = null;
+    deviceType.value = null;
+}
+function setToast(text, color) {
+    toastColor.value = color;
+    toastText.value = text;
+  }
+
+  function setSnackBarTrue() {
+    snackbar.value = true;
+  } 
+function setSelectedDevice (device) {
+    deviceTypes.value = device;
+}  
+async function getAllDevices() {
+    try {
+      loading.value = true;
+      controller.value = new AbortController()
+      const devices = await deviceStore.getAll(controller.value)
+      controller.value = null
+    } catch (e) {
+    } finally {
+      loading.value = false;
+    }
+}
+
+onMounted(async () => {
+    await getAllDevices();
+})
+
+async function createDevice() {
+    const capitalizedDevice = deviceName.value.charAt(0).toUpperCase() + deviceName.value.slice(1);
+    //constructor(id, name, type, state, room) {
+    const device = new Device(null, capitalizedDevice, deviceType.value);
+    try {
+      device.value = await deviceStore.add(device);
+      // Add device to Room
+      setToast(`Dispositivo creado "${capitalizedDevice}" con éxito`, "blue");
+    } catch (e) {
+      setToast(`Error al crear la habitación "${capitalizedDevice}"`, "#FF6666");
+    } finally {
+      toggleOpen();
+      setSnackBarTrue();
+      deviceName.value = null;
+    }
+  }
 </script>
 
 <template>
@@ -70,21 +129,23 @@ const toggleFaved = (device) => {
                         <v-card-item title="Habitación 1"/>
                         <template v-slot:append>
                             <v-btn variant="text" size="x-large" icon>
-                                <v-icon color="#146C94">mdi-pencil</v-icon>
+                              <v-icon color="#146C94">mdi-pencil</v-icon>
                             </v-btn>
                         </template>
                         <template v-slot:prepend>
                             <v-btn variant="text" size="x-large" icon>
-                                <v-icon color="#146C94">mdi-chevron-left</v-icon>
+                              <v-icon color="#146C94">mdi-chevron-left</v-icon>
                             </v-btn>
                         </template>
                     </v-list-item>
-                    <v-list class="horizontal_v_list d-flex align-start">
+                    <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
+                    <h2 v-else-if="deviceStore.devices.length == 0" class="no_rooms_text">No hay habitaciones creadas</h2>
+                    <v-list v-else class="horizontal_v_list d-flex align-start">
                         <v-list-item active="false" class="horizontal_v_list_card mt-2 flex-column text-left"
-                            v-for="(item, index) in computedDevices"
+                            v-for="(item, index) in computedDevices" 
                             :key="index"
                             :value="index"
-                        >
+                        ><!-- should be deviceStore.devices -->
                             <v-list-item class="mb-2">
                                 <v-list-item-title flexibility="space-between"  v-text="item.title"></v-list-item-title> 
                                 <template v-slot:prepend>
@@ -170,16 +231,34 @@ const toggleFaved = (device) => {
                         <v-slider class="ml-5 mr-5" width="30px" v-model="item.intensity" :max="100" :step="1"></v-slider>
                     </v-list-item>
                 </v-list-item>
-                <v-list-item>
-                    <v-footer class="add-button-container" absolute>
-                        <v-btn variant="flat" icon="mdi-plus-circle-outline" size="50px"></v-btn>   <!-- hay q cambiar la accion del click-->
-                    </v-footer>
-                </v-list-item>
             </v-list> 
         </v-card> 
         </v-container> 
+        <v-container>
+            <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
+        </v-container>
         </v-main>
     </v-layout>
+    <v-dialog
+        v-model="open"
+        width="auto"
+    >
+        <v-card class="pa-5" width="600">
+        <h2 class="dialog_title mb-5">Creando Dispositivo</h2>
+        <v-text-field type="input" v-model="deviceName" placeholder="Nombre..." clearable :rules="[required]"/>
+        <v-select
+            v-model="deviceType"
+            :items="devicesOptions"
+            item-title="name"
+            item-value="id"
+            label="Seleccione un dispositivo"
+        />
+        <v-row class="buttons_container" no-gutters>
+            <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
+            <v-btn tonal color="blue" @click="createDevice()">Crear</v-btn>
+        </v-row>
+        </v-card>
+    </v-dialog>
 </template>
 
 <style scoped>
@@ -204,13 +283,11 @@ const toggleFaved = (device) => {
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }
-h2{
-  color: #FFF;
+
+.dialog_title {
   font-family: 'Varela Round', sans-serif;
-  font-size: 32px;
-  margin-top: 115px;
-  margin-bottom: 2px;
-  margin-left: 300px;
+  font-size: 26px;
+  color: #265187;
 }
 
 .horizontal_v_list {
@@ -231,18 +308,6 @@ h2{
   transform: translateZ(0);
 }
 
-.list_card{
-    font-family: 'Varela Round', sans-serif;
-  align-items: flex-start;
-  background-color: white;
-}
-
-  .add-button-container {
-  position: fixed;
-  bottom: 16px;
-  right: 32px;
-  background-color: transparent;
-}
 .text_rgb{
     font-family: 'Varela Round', sans-serif;
     font-size: 10px;
@@ -253,4 +318,31 @@ h2{
     font-size: 14px;
     color:  #76797c;
 }
+.add_icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: #4e5051;
+  font-size: 32px;
+  margin-right: 15px;
+}
+.buttons_container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.no_rooms_text {
+  color: #265187;
+  font-family: 'Varela Round', sans-serif;
+  font-size: 32px;
+  text-align: center;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px;
+}
+
 </style>
