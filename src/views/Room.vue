@@ -1,9 +1,6 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-import { ref, onMounted } from 'vue';
-import { useDeviceStore } from '@/stores/deviceStore';
-
-const deviceStore = useDeviceStore();
+import { ref, computed } from 'vue';
 
 const open = ref(false);
 const deviceName = ref(null);
@@ -31,8 +28,8 @@ const devicesOptions = ref([
   }
 ]);
 const devices = ref([
-{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0},
-{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0 },
+{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: true},
+{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: false },
 ])
 
 const componentToHex = (c) => {
@@ -49,37 +46,18 @@ const updateColor = (device) => {
   device.cardColor = `rgb(${device.red}, ${device.green}, ${device.blue})`;
 };
 
-// const computedDevices = computed(() => {
-//   devices.value.forEach((device) => {
-//     updateColor(device);
-//   });
+const computedDevices = computed(() => {
+  devices.value.forEach((device) => {
+    updateColor(device);
+  });
 
-//   return devices.value;
-// });
+  return devices.value;
+});
 
-  function toggleOpen() {
-    open.value = !open.value;
-    deviceName.value = null;
-    deviceType.value = null;
-  }
+const toggleFaved = (device) => {
+    device.faved = !device.faved;
+};
 
-
-  async function getAllDevices() {
-    try {
-      loading.value = true;
-      controller.value = new AbortController()
-      const devices = await deviceStore.getAll(controller.value)
-      controller.value = null
-    } catch (e) {
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  onMounted(async () => {
-    await getAllDevices();
-  })
-  
 </script>
 
 <template>
@@ -88,7 +66,7 @@ const updateColor = (device) => {
         <v-main class="bg"> 
             <v-container>
                <v-card class="card_container">
-                    <v-list-item>
+                    <v-list-item >
                         <v-card-item title="Habitación 1"/>
                         <template v-slot:append>
                             <v-btn variant="text" size="x-large" icon>
@@ -103,7 +81,7 @@ const updateColor = (device) => {
                     </v-list-item>
                     <v-list class="horizontal_v_list d-flex align-start">
                         <v-list-item active="false" class="horizontal_v_list_card mt-2 flex-column text-left"
-                            v-for="(item, index) in deviceStore.devices"
+                            v-for="(item, index) in computedDevices"
                             :key="index"
                             :value="index"
                         >
@@ -113,7 +91,9 @@ const updateColor = (device) => {
                                         <v-icon color="#146C94">{{item.icon}}</v-icon>
                                 </template>
                                 <template v-slot:append>
-                                        <v-icon color="#146C94">mdi-heart</v-icon>
+                                    <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved(item)">
+                                        <v-icon>{{ item.faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                                    </v-btn>
                                 </template>
                             </v-list-item>
                             <v-divider></v-divider>
@@ -192,7 +172,7 @@ const updateColor = (device) => {
                 </v-list-item>
                 <v-list-item>
                     <v-footer class="add-button-container" absolute>
-                        <v-btn variant="flat" icon="mdi-plus-circle-outline" size="50px" @click="toggleOpen"></v-btn>   <!-- hay q cambiar la accion del click-->
+                        <v-btn variant="flat" icon="mdi-plus-circle-outline" size="50px"></v-btn>   <!-- hay q cambiar la accion del click-->
                     </v-footer>
                 </v-list-item>
             </v-list> 
@@ -200,26 +180,6 @@ const updateColor = (device) => {
         </v-container> 
         </v-main>
     </v-layout>
-    <v-dialog
-        v-model="open"
-        width="auto"
-    >
-        <v-card class="pa-5" width="600">
-        <h2 class="dialog_title mb-5">Creando Dispositivo</h2>
-        <v-text-field type="input" v-model="deviceName" placeholder="Nombre..." clearable :rules="[required]"/>
-        <v-select
-            v-model="deviceType"
-            :items="devicesOptions"
-            item-title="name"
-            item-value="id"
-            label="Seleccione un dispositivo"
-        />
-        <v-row class="buttons_container" no-gutters>
-            <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
-            <v-btn tonal color="blue" @click="toggleOpen">Crear</v-btn>
-        </v-row>
-        </v-card>
-    </v-dialog>
 </template>
 
 <style scoped>
@@ -244,12 +204,15 @@ const updateColor = (device) => {
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }
-
-.dialog_title {
+h2{
+  color: #FFF;
   font-family: 'Varela Round', sans-serif;
-  font-size: 26px;
-  color: #265187;
+  font-size: 32px;
+  margin-top: 115px;
+  margin-bottom: 2px;
+  margin-left: 300px;
 }
+
 .horizontal_v_list {
   display: flex;
   flex-direction: row;
@@ -268,9 +231,10 @@ const updateColor = (device) => {
   transform: translateZ(0);
 }
 
-.buttons_container {
-  display: flex;
-  justify-content: space-between;
+.list_card{
+    font-family: 'Varela Round', sans-serif;
+  align-items: flex-start;
+  background-color: white;
 }
 
   .add-button-container {

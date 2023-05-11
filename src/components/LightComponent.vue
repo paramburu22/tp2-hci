@@ -89,7 +89,7 @@
 <script>
 const functions = ref([
 //DEFAULT VALUES
-{ open: false, title: 'Luz', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, },
+{ open: false, title: 'Luz', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: false },
 ])
 export default {
     data() {
