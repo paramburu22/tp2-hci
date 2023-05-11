@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { Room, RoomApi } from "@/api/room";
 
 export const useRoomStore = defineStore('room', () => {
-    const rooms = ref([])
+    const rooms = ref([]);
 
     async function add(room) {
         const result = await RoomApi.add(room)
@@ -21,11 +21,6 @@ export const useRoomStore = defineStore('room', () => {
         await getAll()
         return result
     }
-    async function get(id) {
-        const result = await RoomApi.get(id);
-        await getAll()
-        return Object.assign(new Room(), result);
-    }
 
     async function getAll(controller = null) {
         let result = await RoomApi.getAll(controller);
@@ -34,5 +29,5 @@ export const useRoomStore = defineStore('room', () => {
         return result
     }
 
-    return { rooms, add, modify, remove, get, getAll }
+    return { rooms, add, modify, remove, getAll }
 })

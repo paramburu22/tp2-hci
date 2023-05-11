@@ -1,7 +1,18 @@
 <script setup>
-  import LogoComponent from '@/components/LogoComponent.vue';
   import NavBarComponent from '@/components/NavBarComponent.vue';
   import { useRouter } from 'vue-router';
+  import { ref, onMounted } from 'vue';
+
+  import { useDeviceStore } from '@/stores/deviceStore';
+
+  const deviceStore = useDeviceStore();
+  const open = ref(false);
+  const roomName = ref(null);
+  const snackbar = ref(false);
+  const toastText = ref(null);
+  const controller = ref(null);
+  const loading = ref(null);
+  const toastColor = ref(null);
 
   const router = useRouter()
     function navigate() {
@@ -28,6 +39,22 @@
     { title: 'Luz 2', place: 'Casa', room:'Habitacion1',icon:'mdi-lightbulb' },
     { title: 'Alarma 1', place: 'Casa', icon:'mdi-alarm-light-outline'},
   ]
+
+  async function getAllDevices() {
+    try {
+      loading.value = true;
+      controller.value = new AbortController()
+      const rooms = await deviceStore.getAll(controller.value)
+      controller.value = null
+    } catch (e) {
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  onMounted(async () => {
+    await getAllDevices();
+  })
 </script>
 
 

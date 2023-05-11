@@ -12,7 +12,6 @@
   const router = useRouter();
 
   const open = ref(false);
-  const result = ref(null);
   const roomName = ref(null);
   const snackbar = ref(false);
   const toastText = ref(null);
@@ -22,10 +21,6 @@
 
   function toggleOpen() {
     open.value = !open.value;
-  }
-
-  function setResult(r) {
-    result.value = JSON.stringify(r, null, 2);
   }
 
   function setToast(text, color) {
@@ -43,10 +38,8 @@
 
     try {
       room.value = await roomStore.add(room);
-      setResult(room.value);
       setToast(`Habitación creada "${capitalizedRoom}" con éxito`, "blue");
     } catch (e) {
-      setResult(e);
       setToast(`Error al crear la habitación "${capitalizedRoom}"`, "#FF6666");
     } finally {
       toggleOpen();
@@ -61,9 +54,7 @@
       controller.value = new AbortController()
       const rooms = await roomStore.getAll(controller.value)
       controller.value = null
-      setResult(rooms)
     } catch (e) {
-      setResult(e)
     } finally {
       loading.value = false;
     }

@@ -17,10 +17,6 @@ class RoomApi {
         return await Api.delete(RoomApi.getUrl(id), controller);
     }
 
-    static async get(id, controller) {
-        return await Api.get(RoomApi.getUrl(id), controller);
-    }
-
     static async getAll(controller) {
         return await Api.get(RoomApi.getUrl(), controller);
     }

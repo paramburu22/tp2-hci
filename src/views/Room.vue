@@ -1,7 +1,9 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useDeviceStore } from '@/stores/deviceStore';
 
+const deviceStore = useDeviceStore();
 
 const open = ref(false);
 const deviceName = ref(null);
@@ -28,10 +30,6 @@ const devicesOptions = ref([
     name:'Heladera',
   }
 ]);
-const devices = ref([
-{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', statelight: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0},
-{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', statelight: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0 },
-])
 
 const componentToHex = (c) => {
   const hex = c.toString(16);
@@ -47,24 +45,36 @@ const updateColor = (device) => {
   device.cardColor = `rgb(${device.red}, ${device.green}, ${device.blue})`;
 };
 
-const computedDevices = computed(() => {
-  devices.value.forEach((device) => {
-    updateColor(device);
-  });
+// const computedDevices = computed(() => {
+//   devices.value.forEach((device) => {
+//     updateColor(device);
+//   });
 
-  return devices.value;
-});
+//   return devices.value;
+// });
 
-function toggleOpen() {
+  function toggleOpen() {
     open.value = !open.value;
     deviceName.value = null;
     deviceType.value = null;
-}
-
-  function setSelectedDevice (device) {
-    deviceTypes.value = device;
   }
-    
+
+
+  async function getAllDevices() {
+    try {
+      loading.value = true;
+      controller.value = new AbortController()
+      const devices = await deviceStore.getAll(controller.value)
+      controller.value = null
+    } catch (e) {
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  onMounted(async () => {
+    await getAllDevices();
+  })
   
 </script>
 
@@ -89,7 +99,7 @@ function toggleOpen() {
                     </v-list-item>
                     <v-list class="horizontal_v_list d-flex align-start">
                         <v-list-item active="false" class="horizontal_v_list_card mt-2 flex-column text-left"
-                            v-for="(item, index) in computedDevices"
+                            v-for="(item, index) in deviceStore.devices"
                             :key="index"
                             :value="index"
                         >
