@@ -10,10 +10,11 @@
                 <template v-slot:prepend>
                     <v-icon color="#146C94">mdi-lightbulb</v-icon>
                 </template>
-                <!-- estado d faveado ir a fetchear
                 <template v-slot:append>
-                <v-icon color="#146C94">mdi-heart</v-icon>
-                </template> -->
+                    <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved(item)">
+                        <v-icon>{{ item.faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                    </v-btn>
+                </template>
             </v-list-item>
             <v-divider></v-divider>
             <v-row>
@@ -97,6 +98,10 @@ export default {
         }
     },
 }
+
+const toggleFaved = (device) => {
+    device.faved = !device.faved;
+};
 </script>
 
 <style scoped>
