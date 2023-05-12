@@ -9,8 +9,8 @@ class RoomApi {
         return await Api.post(RoomApi.getUrl(), room, controller);
     }
 
-    static async modify(room, controller) {
-        return await Api.put(RoomApi.getUrl(room.id), room, controller);
+    static async modify(roomId, roomName, controller) {
+        return await Api.put(RoomApi.getUrl(roomId), { name: roomName }, controller);
     }
 
     static async remove(id, controller) {

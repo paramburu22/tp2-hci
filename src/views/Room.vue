@@ -18,6 +18,8 @@ const toastText = ref(null);
 const controller = ref(null);
 const loading = ref(null);
 const toastColor = ref(null);
+const save = ref(false);
+const currentName = ref();
 
 const roomId = router.currentRoute.value.path.split('/')[2];
 
@@ -43,38 +45,8 @@ const devicesOptions = ref([
     name:'Heladera',
   }
 ]);
-const devices = ref([
-{ open: false, title: 'Luz 1', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: true},
-{ open: false, title: 'Luz 2', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: false },
-])
 
 const currentDevices = computed(() => deviceStore.devices.filter((device) => (device.room && device.room.id) === roomId));
-
-const componentToHex = (c) => {
-  const hex = c.toString(16);
-  return hex.length == 1 ? "0" + hex : hex;
-}
-
-const rgbToHex = (r, g, b) => {
-  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-const updateColor = (device) => {
-  device.hexa = rgbToHex(device.red, device.green, device.blue);
-  device.cardColor = `rgb(${device.red}, ${device.green}, ${device.blue})`;
-};
-
-const computedDevices = computed(() => {
-  devices.value.forEach((device) => {
-    updateColor(device);
-  });
-
-  return devices.value;
-});
-
-const toggleFaved = (device) => {
-    device.faved = !device.faved;
-};
 
 function toggleOpen() {
     open.value = !open.value;
@@ -138,8 +110,7 @@ async function createDevice() {
   
   async function deleteDevice(id) {
     try {
-      const deletedDevice = deviceStore.remove(id);
-      devices.value = devices.value.filter(device => device.id !== id);
+      deviceStore.remove(id);
       setToast(`Dispositivo eliminado con éxito`, "blue");
     } catch (e) {
       setToast(`Error al eliminar el dispositivo`, "#FF6666");
@@ -147,6 +118,44 @@ async function createDevice() {
       setSnackBarTrue();
     }
   }
+
+  async function deleteRoom() {
+    try {
+      loading.value = true;
+      await roomStore.remove(roomId);
+      setToast(`Dispositivo eliminado con éxito`, "blue");
+      router.push('/misdispositivos');
+    } catch (e) {
+      setToast(`Error al eliminar el dispositivo`, "#FF6666");
+    } finally {
+      setSnackBarTrue();
+      loading.value = false;
+    }
+  }
+
+  const updateContent = (e)  => {
+    save.value = true;
+    const inputText = e.target.innerText;
+    currentName.value = inputText;
+  }
+
+  const goBack = computed(() => (() => {
+    loading.value = true;
+    router.push('/misdispositivos');
+  }));
+
+  async function editRoom () {
+    try {
+      await roomStore.modify(roomId, currentName.value.trim());
+      setToast(`Habitación editada con éxito`, "blue");
+    } catch (e) {
+      setToast(`Error al editar la habitación`, "#FF6666");
+    } finally {
+      setSnackBarTrue();
+      save.value = false;
+    }
+  }
+
 </script>
 
 <template>
@@ -155,15 +164,21 @@ async function createDevice() {
         <v-main class="bg"> 
             <v-container>
                 <v-card class="card_container">
-                    <v-list-item class="card_title" >
-                        <v-card-item :title="(roomStore.currentRoom && roomStore.currentRoom.name)"/>
+                    <v-list-item class="card_title">
+                        <div class="edit_title">
+                          <v-card-item width="70%" contenteditable @input="updateContent($event)" class="title">
+                            {{(roomStore.currentRoom && roomStore.currentRoom.name)}}
+                            <v-icon>mdi-pencil</v-icon>
+                          </v-card-item>
+                          <v-btn @click="editRoom" :disabled="!save" plain>Guardar</v-btn>
+                        </div>
                         <template v-slot:append>
-                            <v-btn variant="text" size="x-large" icon>
-                              <v-icon color="#146C94">mdi-pencil</v-icon>
+                            <v-btn variant="text" size="x-large" icon @click="deleteRoom">
+                              <v-icon color="red">mdi-delete</v-icon>
                             </v-btn>
                         </template>
                         <template v-slot:prepend>
-                            <v-btn variant="text" size="x-large" icon>
+                            <v-btn variant="text" size="x-large" icon @click="goBack">
                               <v-icon color="#146C94">mdi-chevron-left</v-icon>
                             </v-btn>
                         </template>
@@ -231,6 +246,18 @@ async function createDevice() {
   background-image: url("@/assets/homeBackground.jpeg");
   background-size: cover;
   overflow-y: scroll;
+}
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+.edit_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .card_container{
   border-radius: 20px;
