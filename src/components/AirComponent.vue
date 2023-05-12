@@ -1,30 +1,35 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-import { ref, computed } from 'vue';
+import { ref, defineProps } from 'vue';
+
+const props = defineProps(['item']);
 
 const open = ref(false);
-const title = ref('Aire Acondicionado');
-const temp = ref(24);
-const model = ref('Apagada');
-const speed = ref(50);
-const hor = ref(45);
-const vert = ref(0);
-const mode = ref('Frio');
+const title = ref(item.name);
+const temp = ref(item.state.temperature);
+const status = ref(item.state.status);
+const speed = ref(item.state.fanSpeed);
+const hor = ref(item.state.horizontalSwing);
+const vert = ref(item.state.verticalSwing);
+const mode = ref(item.state.mode);
 const faved = ref(true);
 
 const modeOptions = ref([{
-    name: 'Calor'
+  value: 'hot',
+  name: 'Calor'
 },
 {
-    name: 'Frio'
+  value: 'cool',
+  name: 'Frio'
 },
 {
-    name: 'Ventilador'
+  value: 'fan',
+  name: 'Ventilador'
 }
 ]);
 
 const horOptions = ref([{
-    value: 'Auto'
+    value: 'auto'
 },
 {
     value: '23°'
@@ -41,7 +46,7 @@ const horOptions = ref([{
 ]);
 
 const vertOptions = ref([{
-    value: 'Auto'
+    value: 'auto'
 },
 {
     value: '-90°'
@@ -62,17 +67,18 @@ const vertOptions = ref([{
 
 
 const toggleFaved = () => {
-    faved = !faved;
+    faved.value = !faved.value;
 };
 
 const increaseTemp = () => {
-    if(temp<38)
+  if(temp < 38) {
     temp++;
+  }
 }
 
 const decreaseTemp = () => {
-    if(temp>18)
-        temp--;
+  if(temp > 18)
+      temp--;
 }
 
 
@@ -110,10 +116,10 @@ const decreaseTemp = () => {
                             </v-row>
                     <v-divider></v-divider>
                     <v-select
-                                    v-model="item.modemode"
+                                    v-model="item.mode"
                                     :items="modeOptions"
                                     item-title="name"
-                                    item-value="name"
+                                    item-value="value"
                                     label="Seleccione un modo"
                                 />
                         <v-list-item class="mt-1 mb-1">

@@ -155,7 +155,7 @@ async function createDevice() {
         <v-main class="bg"> 
             <v-container>
                 <v-card class="card_container">
-                    <v-list-item >
+                    <v-list-item class="card_title" >
                         <v-card-item :title="(roomStore.currentRoom && roomStore.currentRoom.name)"/>
                         <template v-slot:append>
                             <v-btn variant="text" size="x-large" icon>
@@ -168,7 +168,9 @@ async function createDevice() {
                             </v-btn>
                         </template>
                     </v-list-item> 
-                    <v-row cols="2">
+                    <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
+                    <h2 v-else-if="currentDevices.length == 0" class="no_rooms_text">No hay dispositivos creados</h2>
+                    <v-row v-else cols="3" class="cards_render">
                       <v-card v-for="(device) in currentDevices"
                          class="horizontal_v_list_card"
                         >
@@ -233,14 +235,24 @@ async function createDevice() {
 .card_container{
   border-radius: 20px;
   background-color: #d5dbe0;
-  margin-top: 50px;
-  margin-left: 50px;
-  height: 600px;
-  width: 1000px;
+  margin-top: 35px;
+  margin-left: 35px;
+  min-height: 400px;
+  min-width: 400px;
+  max-width: 90%;
+  padding-bottom: 30px;
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }
 
+.card_title {
+  margin-bottom: 15px;
+}
+.cards_render {
+  padding-left: 50px;
+  padding-right: 20px;
+  gap: 25px;
+}
 .dialog_title {
   font-family: 'Varela Round', sans-serif;
   font-size: 26px;
@@ -259,9 +271,7 @@ async function createDevice() {
   background-color: white;
   border-radius: 20px;
   opacity: 1 !important;
-  margin-left: 30px;
-  width: 270px;
-  margin-bottom: 10px;
+  width: 250px;
 }
 
 .text_rgb{
