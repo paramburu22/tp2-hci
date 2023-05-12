@@ -33,5 +33,9 @@ export const useDeviceStore = defineStore('device', () => {
       await getAll()
     }
 
-    return { devices, add, modify, remove, getAll, addDeviceToRoom }
+    async function makeAction(deviceId, action, value) {
+        const response = await DeviceApi.makeAction(deviceId, action, value)
+        await getAll()
+      }
+    return { devices, add, modify, remove, getAll, addDeviceToRoom, makeAction }
 })
