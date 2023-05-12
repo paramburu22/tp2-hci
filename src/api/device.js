@@ -24,6 +24,10 @@ class DeviceApi {
     static async addDeviceToRoom(roomId, deviceId) {
       return await Api.post(`${Api.baseUrl}/rooms/${roomId}/devices/${deviceId}`);
     }
+
+    static async makeAction(roomId, action, value){
+        return await Api.put(`${Api.baseUrl}/devices/${roomId}/${action}`, [value])
+    }
 }
 
 class Device {

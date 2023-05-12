@@ -1,11 +1,15 @@
 <!-- Light Features: Encender, Apagar, Intensidad, Color -->
 <!-- icon:'mdi-lightbulb'-->
 <script setup>
+import { useDeviceStore } from '@/stores/deviceStore';
+import { useRoomStore } from '@/stores/roomStore';
+import { Device } from '@/api/device';
+import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-
+const deviceStore = useDeviceStore();
 const item = ref(
 //DEFAULT VALUES
-{ open: false, title: 'Luz', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: false },
+{ open: false, title: 'Luz', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', sliderValue: 0, faved: false },
 )
 const componentToHex = (c) => {
   const hex = c.toString(16);
@@ -27,6 +31,14 @@ const toggleFaved = (item) => {
 function toggleOpen(item) {
     item.open.value = !item.open.value;
 }
+async function makeAction(action, value) {
+    try {
+      await deviceStore.makeAction('25cd5cdc7ad9fd90', action, value );
+      setToast(`Dispositivo creado con éxito`, "blue");
+    } catch (e) {
+      setToast(`Error al crear la habitación `, "#FF6666");
+    }
+  }
 </script>
 
 <template> 
@@ -85,7 +97,7 @@ function toggleOpen(item) {
                             </v-list>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="primary" variant="text"  @click="updateColor()">Actualizar</v-btn>
+                            <v-btn color="primary" variant="text"  @click="updateColor(item)">Actualizar</v-btn>
                         </v-card-actions>
                     </v-card>
                 </div>
@@ -97,8 +109,8 @@ function toggleOpen(item) {
         </v-row>
         <v-divider></v-divider>
         <v-row class="mt-2">
-            <p class="text ml-3">Intensidad: {{item.intensity}}%</p> 
-            <v-slider color="#146C94" class="ml-5 mr-5" width="30px" v-model="item.intensity" :max="100" :step="1"></v-slider>
+            <p class="text ml-3">Intensidad: {{sliderValue}}%</p> 
+            <v-slider color="#146C94" class="ml-5 mr-5" width="30px"  :max="100" :step="1" @v-model="sliderValue" @input="sliderValue" @click="makeAction('setBrightness', sliderValue)"></v-slider>
         </v-row>
     </v-card>
 </template>
