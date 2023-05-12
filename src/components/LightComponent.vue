@@ -83,7 +83,13 @@
                 <p class="text_rgb ml-2">Hexa: {{item.hexa}}</p>
                 <p class="text_rgb ml-2">R: {{ item.red }} ; G: {{ item.green }} ; B: {{ item.blue }}</p>
             </v-list-item>
-        </v-list>
+            <v-divider></v-divider>
+            <v-list-item align="center" justify="space-between">
+                <v-btn icon variant="flat" color="transparent">
+                    <v-icon @click="deleteDevice(device.id)">mdi-delete-outline</v-icon>
+                </v-btn>
+                </v-list-item>
+            </v-list>
     </v-card>
 </template>
 
