@@ -5,12 +5,12 @@ import { ref, defineProps } from 'vue';
 const props = defineProps(['item']);
 
 const open = ref(false);
-const title = ref('Aire');
-const temp = ref(24);
+const title = ref('Horno');
+const temp = ref(100);
 const status = ref('Apagado');
-const speed = ref('auto');
-const hor = ref('45°');
-const vert = ref('45°');
+const src = ref('Convencional');
+const conv = ref('Apagado');
+const grill = ref('Apagado');
 const mode = ref('Ventilador');
 const faved = ref(true);
 
@@ -30,67 +30,34 @@ const modeOptions = ref([{
 }
 ]);
 
-const horOptions = ref([{
-    value: 'Auto'
-},
-{
-    value: '23°'
-},
-{
-    value: '45°'
-},
-{
-    value: '67°'
-},
-{
-    value: '90°'
-}
-]);
+const grillOptions = ref(['Apagado', 'Economico', 'Completo'])
+const convOptions = ref(['Apagado', 'Economico','Convencional'])
+const srcOptions = ref(['Convencional', 'Arriba','Abajo'])
 
-const vertOptions = ref([{
-    value: 'Auto'
-},
-{
-    value: '-90°'
-},
-{
-    value: '-45°'
-},
-{
-    value: '0°'
-},
-{
-    value: '45°'
-},
-{
-    value: '90°'
-}
-]);
 
+valuesRule: [
+  v => !!v || 'Se necesita un valor',
+  v => (v && v<90) || 'El valor debe ser mayor a 90°',
+  v => (v && v>230) || 'El valor debe ser menor a 230°'
+]
 
 const toggleFaved = () => {
     faved.value = !faved.value;
 };
 
 const increaseTemp = () => {
-  if(temp.value < 38) {
     temp.value++;
-  }
 }
 
 const decreaseTemp = () => {
-  if(temp.value > 18)
-      temp.value=temp.value-1;
+    temp.value=temp.value-1;
 }
-
-
 </script>
-
 
 <template>
     <v-card active="false" class="horizontal_v_list_card mt-2">
         <v-row flexibility="space-between" class="same_line ml-6 mr-6">
-            <v-icon color="#146C94">mdi-air-conditioner</v-icon>
+            <v-icon color="#146C94">mdi-stove</v-icon>
             <p>{{title}}</p>
             <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
                 <v-icon>{{ faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
@@ -104,21 +71,14 @@ const decreaseTemp = () => {
                 :label="`${status}`">
             </v-switch>
         </v-row>
-        <v-select
-            hide-details
-            v-model="mode"
-            :items="modeOptions"
-            item-title="name"
-            item-value="value"
-            label="Seleccione un modo"
-        />
+        <v-divider></v-divider>
         <v-col align-center >
             <p class="same_line"> Temperatura</p>
             <v-row class="same_line">
                 <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp">
                     <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                <p>{{ temp }}°</p>
+                    <v-text-field v-model="temp" type="number" density="compact" style="width:40px" hide-details variant="outlined" lazy-validation :rules= "[(v) => (Number(v)>80  && Number(v) < 230) || 'Required']"></v-text-field>
                 <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp">
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
@@ -128,25 +88,23 @@ const decreaseTemp = () => {
         <v-divider ></v-divider>
         <v-select
             hide-details
-            v-model="speed"
-            :items="speedOptions"
-            label="Velocidad Ventilador"
+            v-model="src"
+            :items="srcOptions"
+            label="Fuente de Calor"
         />
         <v-select
             hide-details
-            v-model="vert"
-            :items="vertOptions"
-            item-title="value"
+            v-model="grill"
+            :items="grillOptions"
             item-value="value"
-            label="Desplazamiento Vertical"
+            label="Modo Grill"
         />
         <v-select
             hide-details
-            v-model="hor"
-            :items="horOptions"
-            item-title="value"
+            v-model="conv"
+            :items="convOptions"
             item-value="value"
-            label="Desplazamiento Horizontal"
+            label="Modo Conveccion"
         />
         <v-row justify="center" no-gutters>
             <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
