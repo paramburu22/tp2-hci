@@ -20,6 +20,10 @@ class RoomApi {
     static async getAll(controller) {
         return await Api.get(RoomApi.getUrl(), controller);
     }
+
+    static async getRoom(roomId) {
+      return await Api.get(RoomApi.getUrl(roomId));
+    }
 }
 
 class Room {

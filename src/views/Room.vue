@@ -2,13 +2,15 @@
 import NavBarComponent from '@/components/NavBarComponent.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useDeviceStore } from '@/stores/deviceStore';
+import { useRoomStore } from '@/stores/roomStore';
 import { Device } from '@/api/device';
-import { Room } from '@/api/room';
+import { useRouter } from 'vue-router';
 
 const deviceStore = useDeviceStore();
+const roomStore = useRoomStore();
+const router = useRouter();
 
 const open = ref(false);
-const open2 = ref(false);
 const deviceName = ref(null);
 const deviceType = ref(null);
 const snackbar = ref(false);
@@ -16,6 +18,8 @@ const toastText = ref(null);
 const controller = ref(null);
 const loading = ref(null);
 const toastColor = ref(null);
+
+const roomId = router.currentRoute.value.path.split('/')[2];
 
 const devicesOptions = ref([
   {
@@ -43,6 +47,8 @@ const devices = ref([
 { open: false, title: 'Luz 1', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0 , hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: true},
 { open: false, title: 'Luz 2', icon:'mdi-lightbulb', model: 'Apagada', red: 0, blue: 0, green: 0, hexa:'#000000', cardColor: 'rgb(0, 0, 0)', intensity: 0, faved: false },
 ])
+
+const currentDevices = computed(() => deviceStore.devices.filter((device) => (device.room && device.room.id) === roomId));
 
 const componentToHex = (c) => {
   const hex = c.toString(16);
@@ -83,9 +89,7 @@ function setToast(text, color) {
   function setSnackBarTrue() {
     snackbar.value = true;
   } 
-function setSelectedDevice (device) {
-    deviceType.value = device;
-}  
+
 async function getAllDevices() {
     try {
       loading.value = true;
@@ -98,8 +102,21 @@ async function getAllDevices() {
     }
 }
 
+async function getRoom() {
+  try {
+    loading.value = true;
+    controller.value = new AbortController()
+    currentRoom = await roomStore.getRoom(roomId)
+    controller.value = null
+  } catch (e) {
+  } finally {
+    loading.value = false;
+  }
+}
+
 onMounted(async () => {
     await getAllDevices();
+    await getRoom();
 })
 
 async function createDevice() {
@@ -108,7 +125,7 @@ async function createDevice() {
     const device = new Device(null, capitalizedDevice, deviceType.value);
     try {
       device.value = await deviceStore.add(device);
-      // Add device to Room
+      deviceStore.addDeviceToRoom(roomId, device.value.id);
       setToast(`Dispositivo creado "${capitalizedDevice}" con éxito`, "blue");
     } catch (e) {
       setToast(`Error al crear la habitación "${capitalizedDevice}"`, "#FF6666");
@@ -139,7 +156,7 @@ async function createDevice() {
             <v-container>
                 <v-card class="card_container">
                     <v-list-item >
-                        <v-card-item title="Habitación 1"/>
+                        <v-card-item :title="(roomStore.currentRoom && roomStore.currentRoom.name)"/>
                         <template v-slot:append>
                             <v-btn variant="text" size="x-large" icon>
                               <v-icon color="#146C94">mdi-pencil</v-icon>
@@ -152,7 +169,7 @@ async function createDevice() {
                         </template>
                     </v-list-item> 
                     <v-row cols="2">
-                      <v-card v-for="(device) in deviceStore.devices.reverse()"
+                      <v-card v-for="(device) in currentDevices"
                          class="horizontal_v_list_card"
                         >
                       <v-card-title class="card_content">{{device.name}}</v-card-title>
@@ -191,7 +208,15 @@ async function createDevice() {
         </v-row>
         </v-card>
     </v-dialog>
-</template>
+    <v-snackbar
+      v-model="snackbar"
+      timeout=2000
+      :color="toastColor"
+      width="auto"
+    >
+      {{ toastText }}
+    </v-snackbar>
+  </template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');

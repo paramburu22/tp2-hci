@@ -19,8 +19,11 @@ class DeviceApi {
 
     static async getAll(controller) {
       return await Api.get(DeviceApi.getUrl(), controller);
-  }
+    }
 
+    static async addDeviceToRoom(roomId, deviceId) {
+      return await Api.post(`${Api.baseUrl}/rooms/${roomId}/devices/${deviceId}`);
+    }
 }
 
 class Device {

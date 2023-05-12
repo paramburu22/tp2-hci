@@ -4,6 +4,7 @@ import { Room, RoomApi } from "@/api/room";
 
 export const useRoomStore = defineStore('room', () => {
     const rooms = ref([]);
+    const currentRoom = ref();
 
     async function add(room) {
         const result = await RoomApi.add(room)
@@ -29,5 +30,10 @@ export const useRoomStore = defineStore('room', () => {
         return result
     }
 
-    return { rooms, add, modify, remove, getAll }
+    async function getRoom(roomId) {
+      const response = await RoomApi.getRoom(roomId)
+      currentRoom.value = response;
+    }
+
+    return { rooms, currentRoom, add, modify, remove, getAll, getRoom }
 })

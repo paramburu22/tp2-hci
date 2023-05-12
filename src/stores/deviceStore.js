@@ -7,7 +7,6 @@ export const useDeviceStore = defineStore('device', () => {
 
     async function add(device) {
         const result = await DeviceApi.add(device)
-        await getAll()
         return Object.assign(new Device(), result)
     }
     async function modify(device) {
@@ -29,5 +28,10 @@ export const useDeviceStore = defineStore('device', () => {
         return result
     }
 
-    return { devices, add, modify, remove, getAll }
+    async function addDeviceToRoom(roomId, deviceId) {
+      const response = await DeviceApi.addDeviceToRoom(roomId, deviceId)
+      await getAll()
+    }
+
+    return { devices, add, modify, remove, getAll, addDeviceToRoom }
 })
