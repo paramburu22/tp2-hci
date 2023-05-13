@@ -1,25 +1,82 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, toRefs } from 'vue';
+import { useDeviceStore } from '@/stores/deviceStore';
 
-const props = defineProps(['item']);
-const title = ref('Horno');
-const temp = ref(100);
-const status = ref('Apagado');
-const src = ref('Convencional');
-const conv = ref('Apagado');
-const grill = ref('Apagado');
+const { item } = toRefs(props);
+const deviceStore = useDeviceStore();
+const props = defineProps({
+  item: Object,
+});
 const faved = ref(true);
 
-const grillOptions = ref(['Apagado', 'Economico', 'Completo']);
-const convOptions = ref(['Apagado', 'Economico','Convencional']);
-const srcOptions = ref(['Convencional', 'Arriba','Abajo']);
+const srcOptions = ref([
+    {
+        label:'Convencional',
+        value: 'conventional'
+    },
+    {
+        label:'Arriba',
+        value: 'top'
+    },
+    {
+        label:'Abajo',
+        value: 'bottom'
+    },]);
+
+const grillOptions = ref([
+    {
+        label:'Apagado',
+        value: 'off'
+    },
+    {
+        label:'Economico',
+        value: 'eco'
+    },
+    {
+        label:'Completo',
+        value: 'large'
+    },]);
+const convOptions = ref([
+    {
+        label:'Apagado',
+        value: 'off'
+    },
+    {
+        label:'Economico',
+        value: 'eco'
+    },
+    {
+        label:'Convencional',
+        value: 'conventional'
+    },]);
 
 
 const toggleFaved = () => faved.value = !faved.value;
 
-const increaseTemp = () => temp.value++;
+const increaseTemp = (item) => {
+  if (item.state.temperature < 230) {
+    item.state.temperature++;
+    if(item.state.temperature > 80)
+    makeAction('setTemperature', item.state.temperature);
+  }
+};
 
-const decreaseTemp = () => temp.value=temp.value-1;
+const decreaseTemp = (item) => {
+  if (item.state.temperature > 80) {
+    item.state.temperature--;
+    if(item.state.temperature < 230)
+        makeAction('setTemperature', item.state.temperature);
+    else makeAction('setTemperature', 230);
+  }
+};
+
+async function makeAction(action, value) {
+    try {
+      await deviceStore.makeAction(item.value.id, action, value);
+    } catch (e) {
+      // Handlear errores
+    }
+  }
 
 </script>
 
@@ -27,53 +84,70 @@ const decreaseTemp = () => temp.value=temp.value-1;
     <v-card active="false" class="horizontal_v_list_card">
         <v-row flexibility="space-between" class="same_line ml-6 mr-6">
             <v-icon color="#146C94">mdi-stove</v-icon>
-            <p>{{title}}</p>
+            <p>{{item.name}}</p>
             <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
                 <v-icon>{{ faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
             </v-btn>
         </v-row> 
         <v-divider></v-divider>
-        <v-row >
-            <v-switch class="is_on ml-6" v-model="model" hide-details
-                true-value="Prendido"
-                false-value="Apagado"
-                :label="`${status}`">
-            </v-switch>
+        <v-row class=" mt-1 ml-2" >
+            <v-switch color="#146C94" class="mt-2 ml-4" v-model="item.state.status" true-value='on' false-value='off' @update:modelValue="(value) => value === 'on' ? makeAction('turnOn') : makeAction('turnOff')" :label="`${item.state.status === 'on' ? 'Prendido' : 'Apagado' }`"/>
         </v-row>
         <v-divider></v-divider>
-        <v-col align-center >
-            <p class="same_line"> Temperatura</p>
+        <v-col align-center>
+            <p class="same_line">Temperatura</p>
             <v-row class="same_line">
-                <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp">
+                <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp(item)">
                     <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                    <v-text-field v-model="temp" type="number" density="compact" style="width:40px" hide-details variant="outlined" lazy-validation :rules= "[(v) => (Number(v)>80  && Number(v) < 230) || 'Required']"></v-text-field>
-                <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp">
+                <v-text-field
+                    v-model="item.state.temperature"
+                    :min="80"
+                    :max="230"
+                    type="number"
+                    density="compact"
+                    hide-details
+                    variant="outlined"
+                    class="col-12 col-sm-4"
+                    :rules="[v => (Number(v) > 80 && Number(v) < 230) || 'La temperatura debe estar entre 80 y 230']"
+                    @change="makeAction('setTemperature', item.state.temperature)"
+                    >
+                    <template #error="{ errors }">
+                        <span class="text--error">{{ errors[0] }}</span>
+                    </template>
+                </v-text-field>
+                <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp(item)">
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
-
             </v-row>
-        </v-col>
+            </v-col>
         <v-divider ></v-divider>
         <v-select
+            item-title="label"
+            item-value="value"
             hide-details
-            v-model="src"
             :items="srcOptions"
             label="Fuente de Calor"
+            v-model="item.state.heat" 
+            @update:modelValue="(value) => makeAction('setHeat', value)"
         />
         <v-select
+            item-title="label"
             hide-details
-            v-model="grill"
+            v-model="item.state.grill"
             :items="grillOptions"
             item-value="value"
             label="Modo Grill"
+            @update:modelValue="(value) => makeAction('setGrill', value)"
         />
         <v-select
+            item-title="label"
             hide-details
-            v-model="conv"
+            v-model="item.state.convection"
             :items="convOptions"
             item-value="value"
             label="Modo Conveccion"
+            @update:modelValue="(value) => makeAction('setConvection', value)"
         />
     </v-card>
 </template>
