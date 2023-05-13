@@ -130,6 +130,7 @@ async function makeAction(action, value) {
   justify-content: center;
   display: flex;
   flex-direction: column;
+  gap: 15px;
 }
 .text{
     font-family: 'Varela Round', sans-serif;

@@ -1,5 +1,9 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
+import LightComponent from '@/components/LightComponent.vue';
+import AirComponent from '@/components/AirComponent.vue';
+import SpeakerComponent from '@/components/SpeakerComponent.vue';
+import OvenComponent from '@/components/OvenComponent.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useDeviceStore } from '@/stores/deviceStore';
 import { useRoomStore } from '@/stores/roomStore';
@@ -41,8 +45,12 @@ const devicesOptions = ref([
     name: 'Aspiradora',
   },
   {
-    id:'rnizejqr2di0okho',
-    name:'Heladera',
+    id:'im77xxyulpegfmv8',
+    name:'Horno',
+  },
+  {
+    id: 'c89b94e8581855bc',
+    name: 'Parlante'
   }
 ]);
 
@@ -168,7 +176,6 @@ async function createDevice() {
                         <div class="edit_title">
                           <v-card-item width="70%" contenteditable @input="updateContent($event)" class="title">
                             {{(roomStore.currentRoom && roomStore.currentRoom.name)}}
-                            <v-icon>mdi-pencil</v-icon>
                           </v-card-item>
                           <v-btn @click="editRoom" :disabled="!save" plain>Guardar</v-btn>
                         </div>
@@ -185,24 +192,25 @@ async function createDevice() {
                     </v-list-item> 
                     <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
                     <h2 v-else-if="currentDevices.length == 0" class="no_rooms_text">No hay dispositivos creados</h2>
-                    <v-row v-else cols="3" class="cards_render">
-                      <v-card v-for="(device) in currentDevices"
-                         class="horizontal_v_list_card"
-                        >
-                      <v-card-title class="card_content">{{device.name}}</v-card-title>
-                      <v-list-item align="center" justify="space-between">
-                        <v-btn icon variant="flat" color="transparent">
-                            <v-icon @click="deleteDevice(device.id)">mdi-delete-outline</v-icon>
-                        </v-btn>
-                      </v-list-item>
-                    
-                      </v-card> 
+                    <v-row v-else class="cards_render">
+                      <v-col v-for="(device) in currentDevices" class="cards_columns">
+                        <v-card class="card_item">
+                          <LightComponent v-if="device.type.id === 'go46xmbqeomjrsjr'" :item="device" />
+                          <AirComponent v-if="device.type.id === 'li6cbv5sdlatti0j'" :item="device" />
+                          <SpeakerComponent v-if="device.type.id === 'c89b94e8581855bc'"/>
+                          <OvenComponent v-if="device.type.id === 'im77xxyulpegfmv8'" />
+                          <v-list-item align="center" justify="space-between">
+                            <v-btn icon variant="flat" color="transparent">
+                                <v-icon @click="deleteDevice(device.id)">mdi-delete-outline</v-icon>
+                            </v-btn>
+                          </v-list-item>
+                      
+                        </v-card> 
+                      </v-col>
                     </v-row>
                   </v-card>
-        </v-container> 
-        <v-container>
-            <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
-        </v-container>
+                </v-container> 
+          <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
         </v-main>
     </v-layout>
     <v-dialog
@@ -252,6 +260,9 @@ async function createDevice() {
   align-items: center;
   justify-content: flex-start;
   gap: 15px;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
 }
 
 .edit_title {
@@ -263,7 +274,6 @@ async function createDevice() {
   border-radius: 20px;
   background-color: #d5dbe0;
   margin-top: 35px;
-  margin-left: 35px;
   min-height: 400px;
   min-width: 400px;
   max-width: 90%;
@@ -276,40 +286,30 @@ async function createDevice() {
   margin-bottom: 15px;
 }
 .cards_render {
-  padding-left: 50px;
+  padding-left: 20px;
   padding-right: 20px;
   gap: 25px;
+  justify-content: space-between;
+}
+
+.cards_columns {
+  justify-content: space-around;
+  display: flex;
 }
 .dialog_title {
   font-family: 'Varela Round', sans-serif;
   font-size: 26px;
   color: #265187;
 }
-
-.horizontal_v_list {
-  display: flex;
-  flex-direction: row;
-  background-color: transparent;
-  opacity: 1 !important;
-
-}
-.horizontal_v_list_card{
+.card_item{
   font-family: 'Varela Round', sans-serif;
   background-color: white;
   border-radius: 20px;
   opacity: 1 !important;
   width: 250px;
-}
-
-.text_rgb{
-    font-family: 'Varela Round', sans-serif;
-    font-size: 10px;
-    color:  #76797c;
-}
-.text_intensity{
-    font-family: 'Varela Round', sans-serif;
-    font-size: 14px;
-    color:  #76797c;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .add_icon {
   position: fixed;
