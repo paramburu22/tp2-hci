@@ -1,69 +1,97 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-import { ref, defineProps } from 'vue';
+import { ref, defineProps,toRefs } from 'vue';
 
-const props = defineProps(['item']);
+import { useDeviceStore } from '@/stores/deviceStore';
 
-const open = ref(false);
-const title = ref('Aire');
-const temp = ref(24);
-const status = ref('Apagado');
-const speed = ref('auto');
-const hor = ref('45°');
-const vert = ref('45°');
-const mode = ref('Ventilador');
+const { item } = toRefs(props);
+const deviceStore = useDeviceStore();
+const props = defineProps({
+  item: Object,
+});
+
 const faved = ref(true);
 
-const speedOptions = ref(['auto','25%', '50%', '75%', '100%']);
+const speedOptions = ref([{
+    value: 'auto',
+    label: 'Auto'
+},
+{
+    value: '25',
+    label: '25%' 
+},
+{
+    value: '50',
+    label: '50%' 
+},
+{
+    value: '75',
+    label: '75%' 
+},
+{
+    value: '100',
+    label: '100%' 
+}]);
 
 const modeOptions = ref([{
-  value: 'hot',
-  name: 'Calor'
+  value: 'heat',
+  label: 'Calor'
 },
 {
   value: 'cool',
-  name: 'Frio'
+  label: 'Frio'
 },
 {
   value: 'fan',
-  name: 'Ventilador'
+  label: 'Ventilador'
 }
 ]);
 
 const horOptions = ref([{
-    value: 'Auto'
+    label: 'auto',
+    value: 'auto'
 },
 {
-    value: '23°'
+    value: '23',
+    label: '23°'
 },
 {
-    value: '45°'
+    value: '45',
+    label: '45°'
 },
 {
-    value: '67°'
+    value: '67',
+    label: '67°'
 },
 {
-    value: '90°'
+    value: '90',
+    label: '90°'
 }
 ]);
 
 const vertOptions = ref([{
-    value: 'Auto'
+    label: 'Auto',
+    value: 'auto'
 },
 {
-    value: '-90°'
+    value: '-90',
+    label: '-90°'
 },
 {
-    value: '-45°'
+    value: '-45',
+    label: '-45°'
 },
 {
-    value: '0°'
+    value: '0',
+    label: '0°'
 },
 {
-    value: '45°'
+    value: '45',
+    label: '45°'
 },
 {
-    value: '90°'
+    value: '90',
+    label: '90°'
 }
 ]);
 
@@ -72,17 +100,30 @@ const toggleFaved = () => {
     faved.value = !faved.value;
 };
 
-const increaseTemp = () => {
-  if(temp.value < 38) {
-    temp.value++;
+
+const increaseTemp = (item) => {
+  if (item.state.temperature < 38) {
+    item.state.temperature++;
+    if(item.state.temperature > 18)
+    makeAction('setTemperature', item.state.temperature);
   }
-}
+};
 
-const decreaseTemp = () => {
-  if(temp.value > 18)
-      temp.value=temp.value-1;
-}
+const decreaseTemp = (item) => {
+  if (item.state.temperature > 18) {
+    item.state.temperature--;
+    if(item.state.temperature < 38)
+        makeAction('setTemperature', item.state.temperature);
+  }
+};
 
+async function makeAction(action, value) {
+    try {
+      await deviceStore.makeAction(item.value.id, action, value);
+    } catch (e) {
+      // Handlear errores
+    }
+  }
 
 </script>
 
@@ -91,62 +132,63 @@ const decreaseTemp = () => {
     <v-card active="false" class="horizontal_v_list_card">
         <v-row flexibility="space-between" class="same_line ml-6 mr-6">
             <v-icon color="#146C94">mdi-air-conditioner</v-icon>
-            <p>{{title}}</p>
+            <p>{{item.name}}</p>
             <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
                 <v-icon>{{ faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
             </v-btn>
         </v-row> 
         <v-divider></v-divider>
-        <v-row >
-            <v-switch class="is_on ml-6" v-model="model" hide-details
-                true-value="Prendido"
-                false-value="Apagado"
-                :label="`${status}`">
-            </v-switch>
+        <v-row class=" mt-1 ml-2" >
+            <v-switch color="#146C94" class="mt-2 ml-4" v-model="item.state.status" true-value='on' false-value='off' @update:modelValue="(value) => value === 'on' ? makeAction('turnOn') : makeAction('turnOff')" :label="`${item.state.status === 'on' ? 'Prendido' : 'Apagado' }`"/>
         </v-row>
         <v-select
             hide-details
-            v-model="mode"
+            v-model="item.state.mode"
             :items="modeOptions"
-            item-title="name"
+            item-title="label"
             item-value="value"
             label="Seleccione un modo"
+            @update:modelValue="(value) => makeAction('setMode', value)"
         />
         <v-col align-center >
             <p class="same_line"> Temperatura</p>
             <v-row class="same_line">
-                <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp">
+                <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp(item)">
                     <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                <p>{{ temp }}°</p>
-                <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp">
+                <p>{{ item.state.temperature}}°</p>
+                <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp(item)">
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
-
             </v-row>
         </v-col>
         <v-divider ></v-divider>
         <v-select
             hide-details
-            v-model="speed"
+            v-model="item.state.fanSpeed"
             :items="speedOptions"
             label="Velocidad Ventilador"
+            item-title="label"
+            item-value="value"
+            @update:modelValue="(value) => makeAction('setFanSpeed', value)"
         />
         <v-select
             hide-details
-            v-model="vert"
+            v-model="item.state.verticalSwing"
             :items="vertOptions"
-            item-title="value"
+            item-title="label"
             item-value="value"
             label="Desplazamiento Vertical"
+            @update:modelValue="(value) => makeAction('setVerticalSwing', value)"
         />
         <v-select
-            hide-details
-            v-model="hor"
+        hide-details
+            v-model="item.state.horizontalSwing"
             :items="horOptions"
-            item-title="value"
+            item-title="label"
             item-value="value"
             label="Desplazamiento Horizontal"
+            @update:modelValue="(value) => makeAction('setHorizontalSwing', value)"
         />
     </v-card>
 </template>
@@ -166,6 +208,7 @@ const decreaseTemp = () => {
     justify-content: space-between;
     margin: 0;
     align-items: center;
+    flex-wrap: nowrap;
 }
 
 .is_on{
