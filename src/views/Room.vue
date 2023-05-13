@@ -197,8 +197,8 @@ async function createDevice() {
                         <v-card class="card_item">
                           <LightComponent v-if="device.type.id === 'go46xmbqeomjrsjr'" :item="device" />
                           <AirComponent v-if="device.type.id === 'li6cbv5sdlatti0j'" :item="device" />
-                          <SpeakerComponent v-if="device.type.id === 'c89b94e8581855bc'"/>
-                          <OvenComponent v-if="device.type.id === 'im77xxyulpegfmv8'" />
+                          <SpeakerComponent v-if="device.type.id === 'c89b94e8581855bc'" :item="device"/>
+                          <OvenComponent v-if="device.type.id === 'im77xxyulpegfmv8'" :item="device"/>
                           <v-list-item align="center" justify="space-between">
                             <v-btn icon variant="flat" color="transparent">
                                 <v-icon @click="deleteDevice(device.id)">mdi-delete-outline</v-icon>
