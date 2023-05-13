@@ -88,7 +88,7 @@ const decreaseTemp = () => {
 
 
 <template>
-    <v-card active="false" class="horizontal_v_list_card mt-2">
+    <v-card active="false" class="horizontal_v_list_card">
         <v-row flexibility="space-between" class="same_line ml-6 mr-6">
             <v-icon color="#146C94">mdi-air-conditioner</v-icon>
             <p>{{title}}</p>
@@ -148,12 +148,6 @@ const decreaseTemp = () => {
             item-value="value"
             label="Desplazamiento Horizontal"
         />
-        <v-row justify="center" no-gutters>
-            <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
-                <v-icon>mdi-trash-can-outline</v-icon>
-            </v-btn>
-        </v-row>
-
     </v-card>
 </template>
 
@@ -165,14 +159,8 @@ const decreaseTemp = () => {
   border-radius: 20px;
   opacity: 1 !important;
   width: 250px;
-  justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 6px
-}
-.go_up{
-    margin-top:-10px;
-    margin-bottom:-10px
 }
 .same_line{
     justify-content: space-between;

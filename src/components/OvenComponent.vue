@@ -1,61 +1,30 @@
 <script setup>
-import NavBarComponent from '@/components/NavBarComponent.vue';
 import { ref, defineProps } from 'vue';
 
 const props = defineProps(['item']);
-
-const open = ref(false);
 const title = ref('Horno');
 const temp = ref(100);
 const status = ref('Apagado');
 const src = ref('Convencional');
 const conv = ref('Apagado');
 const grill = ref('Apagado');
-const mode = ref('Ventilador');
 const faved = ref(true);
 
-const speedOptions = ref(['auto','25%', '50%', '75%', '100%']);
-
-const modeOptions = ref([{
-  value: 'hot',
-  name: 'Calor'
-},
-{
-  value: 'cool',
-  name: 'Frio'
-},
-{
-  value: 'fan',
-  name: 'Ventilador'
-}
-]);
-
-const grillOptions = ref(['Apagado', 'Economico', 'Completo'])
-const convOptions = ref(['Apagado', 'Economico','Convencional'])
-const srcOptions = ref(['Convencional', 'Arriba','Abajo'])
+const grillOptions = ref(['Apagado', 'Economico', 'Completo']);
+const convOptions = ref(['Apagado', 'Economico','Convencional']);
+const srcOptions = ref(['Convencional', 'Arriba','Abajo']);
 
 
-valuesRule: [
-  v => !!v || 'Se necesita un valor',
-  v => (v && v<90) || 'El valor debe ser mayor a 90°',
-  v => (v && v>230) || 'El valor debe ser menor a 230°'
-]
+const toggleFaved = () => faved.value = !faved.value;
 
-const toggleFaved = () => {
-    faved.value = !faved.value;
-};
+const increaseTemp = () => temp.value++;
 
-const increaseTemp = () => {
-    temp.value++;
-}
+const decreaseTemp = () => temp.value=temp.value-1;
 
-const decreaseTemp = () => {
-    temp.value=temp.value-1;
-}
 </script>
 
 <template>
-    <v-card active="false" class="horizontal_v_list_card mt-2">
+    <v-card active="false" class="horizontal_v_list_card">
         <v-row flexibility="space-between" class="same_line ml-6 mr-6">
             <v-icon color="#146C94">mdi-stove</v-icon>
             <p>{{title}}</p>
@@ -106,17 +75,10 @@ const decreaseTemp = () => {
             item-value="value"
             label="Modo Conveccion"
         />
-        <v-row justify="center" no-gutters>
-            <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
-                <v-icon>mdi-trash-can-outline</v-icon>
-            </v-btn>
-        </v-row>
-
     </v-card>
 </template>
 
-<style>
-
+<style scoped>
 .horizontal_v_list_card{
   font-family: 'Varela Round', sans-serif;
   background-color: white;
@@ -126,11 +88,6 @@ const decreaseTemp = () => {
   justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 6px
-}
-.go_up{
-    margin-top:-10px;
-    margin-bottom:-10px
 }
 .same_line{
     justify-content: space-between;
