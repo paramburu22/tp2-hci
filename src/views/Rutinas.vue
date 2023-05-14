@@ -1,106 +1,54 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-const devices = [
-    { title: 'Rutina 1', acciones: [
-    {
-      subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    {
-      subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
-      states:['24º', '0º horizontal']
-    },
-    {
-      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    ] },
-    { title: 'Rutina 2', acciones: [
-    {
-      subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    {
-      subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
-      states:['24º', '0º horizontal']
-    },
-    {
-      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    {
-      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    ] },
-    { title: 'Rutina 3', acciones: [
-    {
-      subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    {
-      subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
-      states:['24º', '0º horizontal']
-    },
-    {
-      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    ] },
-    { title: 'Rutina 4', acciones: [
-    {
-      subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    {
-      subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
-      states:['24º', '0º horizontal']
-    },
-    {
-      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    ] }
-    /*{ title: 'Luz 2', icon:'mdi-lightbulb' ,state_light: 'Apagado', state_color:'purple', intensity:'50'},*/
-];
-import { ref } from 'vue';
-const menu = ref(false);
-const light1 = ref({
-  red: 0,
-  blue: 0,
-  green: 0,
-})
+import { useRoutineStore } from '@/stores/routineStore';
+import { useRouter } from 'vue-router';
+import { ref, computed } from 'vue';
 
-const menu2 = {
-  data() {
-    return {
-      colorMenu: false,
-      props: {
-    color: {
-      type: String,
-      default: "#ffffff",
-    },
-    slider1: {
-      type: Number,
-      default: 50,
-    },
-    slider2: {
-      type: Number,
-      default: 50,
-    },
-  },
-  methods: {
-    toggleColorMenu() {
-      this.colorMenu = !this.colorMenu
-    },
-    setColor(color) {
-      document.documentElement.style.setProperty('--primary-color', color);
-      this.toggleColorMenu();
+const routineStore = useRoutineStore();
+const router = useRouter();
+
+const loading = ref(null);
+const save = ref(false);
+const currentName = ref();
+
+const updateContent = (e)  => {
+  save.value = true;
+  const inputText = e.target.innerText;
+  currentName.value = inputText;
+}
+
+async function deleteRoutine() {
+    try {
+      loading.value = true;
+      await routineStore.remove(routineId);
+      setToast(`Dispositivo eliminado con éxito`, "blue");
+      router.push('/misdispositivos');
+    } catch (e) {
+      setToast(`Error al eliminar el dispositivo`, "#FF6666");
+    } finally {
+      setSnackBarTrue();
+      loading.value = false;
     }
   }
-}
+
+async function editRoutines() {
+  try {
+    await routineStore.modify(routineId, currentName.value.trim());
+    setToast(`Habitación editada con éxito`, "blue");
+  } catch (e) {
+    setToast(`Error al editar la habitación`, "#FF6666");
+  } finally {
+    setSnackBarTrue();
+    save.value = false;
   }
 }
+
+const goBack = computed(() => (() => {
+  loading.value = true;
+  router.push('/misdispositivos');
+}));
+
+const goToRoutineCreation = computed(() => router.push('/routinecreation'));
 </script>
 
 <template>
@@ -109,72 +57,41 @@ const menu2 = {
       <v-main class="bg"> 
           <v-container>
              <v-card class="card_container">
-                  <v-list-item>
-                      <v-card-item title="Mis Rutinas"/>
-                      <template v-slot:append>
-                          <v-btn variant="text" size="x-large" icon>
-                              <v-icon color="#146C94">mdi-pencil</v-icon>
-                          </v-btn>
-                      </template>
-                  </v-list-item>
-                      <v-list class="horizontal_v_list d-flex align-start overflow-y-auto" >
-                          <v-list-item active="false" class="horizontal_v_list_card"
-                              v-for="(item, index) in devices"
-                                  :key="index"
-                                  :value="index"
-                              >
-                              <v-list-item >
-                                <v-list-item-title flexibility="space-between"  v-text="item.title"></v-list-item-title> 
-                                <template v-slot:prepend>
-                                        <v-icon color="#146C94">mdi-heart</v-icon>
-                                </template>
-                                <template v-slot:append>
-                                    <v-switch class="mt-4"></v-switch>
-                                </template>
-                                </v-list-item>
-                                <v-divider></v-divider>
-                                
-                          <v-list-item active="false" class=" mt-2 mb-2 vertical_v_list_c1 d-flex align-start "
-                              v-for="(elem, index) in item.acciones"
-                                  :key="index"
-                                  :value="index"
-                              >
-                                <v-list-item >
-                                  <template v-slot:prepend>
-                                        <v-icon color="#146C94">{{elem.icon}}</v-icon>
-                                    </template>
-                                  <v-row>
-                                  <v-col>
-                                    <v-list-item-title>{{ elem.subtitle }}</v-list-item-title>
-                                    <v-list-item-subtitle>{{ elem.from }}</v-list-item-subtitle>
-                                  </v-col><!--
-                                  <v-col>
-                                    <template v-slot:prepend>
-                                        <v-icon color="#146C94">{{elem.icon}}</v-icon>
-                                    </template>
-                                  </v-col>
-                                
-                                   <v-col>
-                                    <v-list-item-text  mt-1 class="details mb-1" v-text="elem.states"></v-list-item-text>
-                                   </v-col>-->
-                                   <v-col >
-                                    <v-list-item-text active="false" class="mt-1 mb-2 vertical_v_list_c1 "
-                                    v-for="(elem2, index) in elem.states"
-                                      :key="index"
-                                      :value="index"
-                                   >
-                                   <p class="details">{{ elem2 }}</p>
-                                  </v-list-item-text>
-                                   </v-col>
-                                  </v-row>
-                                </v-list-item>
+                <v-list-item class="card_title">
+                  <div class="edit_title">
+                    <v-card-item width="70%" contenteditable @input="updateContent($event)" class="title">
+                      {{(routineStore.currentRoom && routineStore.currentRoom.name)}}
+                    </v-card-item>
+                    <v-btn @click="editRoutines" :disabled="!save" plain>Guardar</v-btn>
+                  </div>
+                  <template v-slot:append>
+                        <v-btn variant="text" size="x-large" icon @click="deleteRoutine">
+                          <v-icon color="red">mdi-delete</v-icon>
+                        </v-btn>
+                    </template>
+                    <template v-slot:prepend>
+                        <v-btn variant="text" size="x-large" icon @click="goBack">
+                          <v-icon color="#146C94">mdi-chevron-left</v-icon>
+                        </v-btn>
+                    </template>
+                </v-list-item>
+                  <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
+                  <h2 v-else-if="routineStore.routines.length == 0" class="no_rooms_text">No hay rutinas creadas</h2>
+                  <v-row v-else class="cards_render">
+                      <v-col v-for="(routine) in routineStore.routines" class="cards_columns">
+                        <v-card class="card_item">
 
-                              </v-list-item>
-                            
+                          <v-list-item align="center" justify="space-between">
+                            <v-btn icon variant="flat" color="transparent">
+                              <v-icon @click="deleteDevice(routine.id)">mdi-delete-outline</v-icon>
+                            </v-btn>
                           </v-list-item>
-                      </v-list> 
-              </v-card> 
+                        </v-card> 
+                      </v-col>
+                    </v-row>
+                </v-card>
           </v-container> 
+          <v-icon class="add_icon" @click="goToRoutineCreation">mdi-plus-circle-outline</v-icon>
       </v-main>
   </v-layout>
   
@@ -191,57 +108,87 @@ const menu2 = {
   background-size: cover;
   overflow-y: scroll;
 }
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+.edit_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .card_container{
   border-radius: 20px;
   background-color: #d5dbe0;
-  margin-top: 50px;
-  margin-left: 50px;
-  height: 600px;
-  width: 1000px;
+  margin-top: 35px;
+  min-height: 400px;
+  min-width: 400px;
+  max-width: 90%;
+  padding-bottom: 30px;
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }
-h2{
-  color: #FFF;
-  font-family: 'Varela Round', sans-serif;
-  font-size: 32px;
-  margin-top: 115px;
-  margin-bottom: 2px;
-  margin-left: 300px;
+
+.card_title {
+  margin-bottom: 15px;
+}
+.cards_render {
+  padding-left: 20px;
+  padding-right: 20px;
+  gap: 25px;
+  justify-content: space-between;
 }
 
-.horizontal_v_list {
-  flex-direction: row;
-  background-color: transparent;
-  opacity: 1 !important;
-  height: 500;
+.cards_columns {
+  justify-content: space-around;
+  display: flex;
 }
-.horizontal_v_list_card{
+.dialog_title {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 26px;
+  color: #265187;
+}
+.card_item{
   font-family: 'Varela Round', sans-serif;
   background-color: white;
   border-radius: 20px;
   opacity: 1 !important;
-  margin-left: 30px;
-  width: 300px;
-  box-shadow: 3px 4px 5px #6394a2;
-  transform: translateZ(0);
-  height: 100%;
-
-  
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.add_icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: #4e5051;
+  font-size: 32px;
+  margin-right: 15px;
+}
+.buttons_container {
+  display: flex;
+  justify-content: space-between;
 }
 
-.vertical_v_list_c1{
-  display:flex;
+.no_rooms_text {
+  color: #265187;
   font-family: 'Varela Round', sans-serif;
-  background-color: transparent;
-  border-radius: 20px;
-  opacity: 1 !important;
-  transform: translateZ(0);
+  font-size: 32px;
+  text-align: center;
 }
 
-.details{
-  font-family: 'Varela Round', sans-serif;
-  font-size: 8px;
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px;
 }
 
 

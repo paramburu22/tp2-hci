@@ -85,7 +85,7 @@
             class="card_container" 
             @click="navigate(room.id)"
           >
-            <v-card-title class="card_content">{{room.name}}</v-card-title>
+            <p class="card_content" width="50%">{{room.name}}</p>
             <v-icon size="30" color="#146C94">mdi-heart</v-icon>
           </v-card>
         </v-row>
@@ -148,14 +148,18 @@
   height: 75px; 
   width: 300px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  padding-left: 30px;
+  flex-wrap: nowrap;
+  padding-left: 20px;
 }
 .card_content {
   font-family: 'Varela Round', sans-serif;
   font-size: 25px;
   font-weight: 100;
+  width: 60%;
+  overflow: hidden;
+white-space: nowrap;
 }
 
 .add_icon {

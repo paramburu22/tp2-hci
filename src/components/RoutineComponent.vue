@@ -1,27 +1,19 @@
 <script setup>
-import NavBarComponent from '@/components/NavBarComponent.vue';
-const devices = {
-     title: 'Rutina 1', acciones: [
-    {
-      subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    {
-      subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
-      states:['24º', '0º horizontal']
-    },
-    {
-      subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
-      states:['Intensidad: 23%', 'Color: Violeta']
-    },
-    ]};
-import { ref } from 'vue';
-const menu = ref(false);
-const light1 = ref({
-  red: 0,
-  blue: 0,
-  green: 0,
-})
+// const devices = {
+//      title: 'Rutina 1', acciones: [
+//     {
+//       subtitle: 'Luz 1', from: 'Casa', icon: 'mdi-lightbulb-on', 
+//       states:['Intensidad: 23%', 'Color: Violeta']
+//     },
+//     {
+//       subtitle: 'Aire Ac', from: 'Casa', icon: 'mdi-air-conditioner',
+//       states:['24º', '0º horizontal']
+//     },
+//     {
+//       subtitle: 'Luz 3', from: 'Oficina', icon: 'mdi-lightbulb-on',
+//       states:['Intensidad: 23%', 'Color: Violeta']
+//     },
+// ]};
 
 </script>
 <template>
