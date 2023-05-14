@@ -4,6 +4,7 @@ import LightComponent from '@/components/LightComponent.vue';
 import AirComponent from '@/components/AirComponent.vue';
 import SpeakerComponent from '@/components/SpeakerComponent.vue';
 import OvenComponent from '@/components/OvenComponent.vue';
+import DoorComponent from '@/components/DoorComponent.vue'
 import { ref, computed, onMounted } from 'vue';
 import { useDeviceStore } from '@/stores/deviceStore';
 import { useRoomStore } from '@/stores/roomStore';
@@ -29,16 +30,8 @@ const roomId = router.currentRoute.value.path.split('/')[2];
 
 const devicesOptions = ref([
   {
-    id: 'go46xmbqeomjrsjr',
-    name: 'Lampara',
-  },
-  {
     id: 'li6cbv5sdlatti0j',
     name: 'Aire Acondicionado',
-  },
-  {
-    id: 'mxztsyjzsrq7iaqc',
-    name: 'Alarma',
   },
   {
     id: 'ofglvd9gqx8yfl3l',
@@ -49,8 +42,16 @@ const devicesOptions = ref([
     name:'Horno',
   },
   {
+    id: 'go46xmbqeomjrsjr',
+    name: 'Lampara',
+  },
+  {
     id: 'c89b94e8581855bc',
     name: 'Parlante'
+  },
+  {
+    id: 'lsf78ly0eqrjbz91',
+    name: 'Puerta'
   }
 ]);
 
@@ -199,6 +200,7 @@ async function createDevice() {
                           <AirComponent v-if="device.type.id === 'li6cbv5sdlatti0j'" :item="device" />
                           <SpeakerComponent v-if="device.type.id === 'c89b94e8581855bc'" :item="device"/>
                           <OvenComponent v-if="device.type.id === 'im77xxyulpegfmv8'" :item="device"/>
+                          <DoorComponent v-if="device.type.id === 'lsf78ly0eqrjbz91'" :item="device"/>
                           <v-list-item align="center" justify="space-between">
                             <v-btn icon variant="flat" color="transparent">
                                 <v-icon @click="deleteDevice(device.id)">mdi-delete-outline</v-icon>
