@@ -33,6 +33,11 @@ const router = createRouter({
       path: '/room/:id',
       name: 'room',
       component: () => import("../views/Room.vue"),
+    },
+    {
+      path: '/routinecreation',
+      name:'routinecreation',
+      component: () => import("../views/RoutineCreation.vue"),
     }
   ]
   
