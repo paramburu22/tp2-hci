@@ -1,16 +1,9 @@
 <script setup>
 import NavBarComponent from '@/components/NavBarComponent.vue';
-import LightComponent from '@/components/LightComponent.vue';
-import AirComponent from '@/components/AirComponent.vue';
-import SpeakerComponent from '@/components/SpeakerComponent.vue';
-import OvenComponent from '@/components/OvenComponent.vue';
-import LightRoutineCreation from '@/components/LightRoutineCreation.vue';
-import OvenRoutineCreation from '@/components/OvenRoutineCreation.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useDeviceStore } from '@/stores/deviceStore';
 import { useRoomStore } from '@/stores/roomStore';
 import { useRoutineStore } from '@/stores/routineStore';
-import { Device } from '@/api/device';
 import { useRouter } from 'vue-router';
 
 const deviceStore = useDeviceStore();
@@ -32,185 +25,12 @@ const devices = ref([]);
 const newDeviceId = ref();
 const newDeviceType = ref();
 const newAction = ref();
+const newActionParams = ref();
+const newActionParamsValue = ref();
 
 const routineId = router.currentRoute.value.path.split('/')[2];
 
 const currentRoutines = computed(() => deviceStore.devices.filter((device) => (device.room && device.room.id) === routineId));
-
-const all_actions = [
-  {
-    id: 'go46xmbqeomjrsjr',
-    actions: [{
-        name: 'turnOn',
-        value: 'Encender',
-        params: 0,
-      },
-      {
-        name: 'turnOff',
-        value: 'Apagar',
-        params: 0,
-      },
-      {
-        name: 'setColor',
-        value: 'Cambiar color',
-        params: 1,
-      },
-      {
-        name: 'setBrightness',
-        value: 'Cambiar intensidad',
-        params: 1,
-      }
-    ],
-  },
-  {
-    id:'c89b94e8581855bc',
-    actions: [{
-        name: 'setVolume',
-        value: 'Cambiar volumen',
-        params: 1,
-      },
-      {
-        name: 'play',
-        value: 'Reproducir',
-        params: 0,
-      },
-      {
-        name: 'stop',
-        value: 'Detener',
-        params: 0,
-      },
-      {
-        name: 'pause', 
-        value: 'Pausar',
-        params: 0,
-      },
-      {
-        name: 'resume',
-        value: 'Reanudar',
-        params: 0,
-      },
-      {
-        name: 'nextSong',
-        value: 'Siguiente cancion',
-        params: 0,
-      },
-      {
-        name: 'previousSong',
-        value: 'Anterior cancion',
-        params: 0,
-      },
-      {
-        name: 'setGenre',
-        value: 'Cambiar genero',
-        params: 1,
-      },
-      {
-        name: 'getPllist',
-        value: 'Obtener playlist',
-        params: 0,
-      },
-    ],
-  },
-  {
-    id:'im77xxyulpegfmv8',
-    actions: [{
-        name: 'turnOn',
-        value: 'Encender',
-        params: 0,
-      },
-      {
-        name: 'turnOff',
-        value: 'Apagar',
-        params: 0,
-      },
-      {
-        name: 'setTemperature',
-        value: 'Cambiar Temperatura',
-        params: 1,
-      },
-      {
-        name: 'setHeat',
-        value: 'Cambiar Fuente de Calor',
-        params: 1
-      },
-      {
-        name: 'setGrill',
-        value: 'Cambiar Modo Grill',
-        params: 1
-      },
-      {
-        name: 'setvection',
-        value: 'Cambiar Modo Conveccion',
-        params: 1
-      },
-    ],
-  },
-  {
-    id:'li6cbv5sdlatti0j',
-    actions: [{
-        name: 'turnOn',
-        value: 'Encender',
-        params: 0,
-      },
-      {
-        name: 'turnOff',
-        value: 'Apagar',
-        params: 0,
-      },
-      {
-        name: 'setTemperature',
-        value: 'Cambiar Temperatura',
-        params: 1,
-      },
-      {
-        name: 'setMode',
-        value: 'Cambiar Modo',
-        params: 1
-      },
-      {
-        name: 'setVerticalSwing',
-        value: 'Cambiar Desplazamiento Vertical',
-        params: 1
-      },
-      {
-        name: 'setHorizontalSwing',
-        value: 'Cambiar Desplazamiento Horizontal',
-        params: 1
-      },
-      {
-        name: 'setFanSpeed',
-        value: 'Cambiar Velocidad Ventilador',
-        params: 1
-      }
-    ],
-  },
-  ,
-  {
-    id: 'lsf78ly0eqrjbz91',
-    actions: [{
-        name: 'open',
-        value: 'Abrir',
-        params: 0,
-      },
-      {
-        name: 'close',
-        value: 'Cerrar',
-        params: 0,
-      },
-      {
-        name: 'lock',
-        value: 'Bloquear',
-        params: 0,
-      },
-      {
-        name: 'unlock',
-        value: 'Desbloquear',
-        params: 0,
-      }
-    ],
-  }
-]
-
 
 const getActionValue = (id, actionName) => {
    const device = this.devices.find(device => device.id === id);
@@ -325,6 +145,24 @@ async function createDevice() {
     }
   }
 
+  const increaseTemp = () => {
+    if(!newActionParamsValue.value) {
+      newActionParamsValue.value = 24;
+    }
+    if (newActionParamsValue.value < 38) {
+      newActionParamsValue.value++;
+    }
+  };
+
+  const decreaseTemp = () => {
+    if(!newActionParamsValue.value) {
+      newActionParamsValue.value = 24;
+    }
+    if (newActionParamsValue.value > 18) {
+      newActionParamsValue.value--;
+    };
+  }
+
 </script>
 
 <template>
@@ -389,16 +227,39 @@ async function createDevice() {
         label="Seleccione un dispositivo"
         @update:modelValue="(value) => {
           newAction = null;
+          newActionParamsValue = null;
+          newActionParams = null;
           newDeviceType = deviceStore.devices.find(device => device.id === value).type.id;
         }"
       />
       <v-select
         v-model="newAction"
-        :items="(newDeviceType && all_actions.find(action => action.id === newDeviceType).actions)"
+        :items="(newDeviceType && routineStore.allActions.find(action => action.id === newDeviceType).actions)"
         item-title="value"
         item-value="name"
         label="Seleccione una acción"
+        @update:modelValue="(value) => {
+          newActionParamsValue = null;
+          newActionParams = (routineStore.allActions.find(action => action.id === newDeviceType).actions.find(action => action.name === value));
+        }"
       />
+      <div v-show="(newActionParams && newActionParams.params) === 1">
+        <v-color-picker v-if="newAction === 'setColor'" v-model="newActionParamsValue"/>
+        <div v-if="(newActionParams && newActionParams.component) === 'slider'">
+          <p>{{`${newActionParams.title}: ${newActionParamsValue || 0}` }}</p>
+          <v-slider :step="newActionParams.step" :min="newActionParams.min" :max="newActionParams.max" v-model="newActionParamsValue" />
+        </div>
+        <v-select :items="newActionParams.options" v-if="newActionParams && newActionParams.component === 'select'" label="Seleccione una opción" v-model="newActionParamsValue" item-value="value" item-title="label" />
+        <v-row align="center" justify="center" v-if="newAction === 'setTemperature'">
+          <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp()">
+              <v-icon>mdi-minus</v-icon>
+          </v-btn>
+          <p>{{ newActionParamsValue || 24 }}°</p>
+          <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp()">
+              <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-row>
+      </div>
       <v-row class="buttons_container" no-gutters>
         <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
         <v-btn tonal color="blue" @click="createDevice()">Crear</v-btn>
