@@ -21,7 +21,7 @@ const intensity = ref({ value: "100", active: true });
     </v-row>
     <v-row align="center" no-gutters>
       <v-col align="flex-start" cols="10">
-        <v-switch color="#146C94" label="Encendido" v-model="status.value"/>
+        <v-switch color="#146C94" v-model="status.value" true-value='on' false-value='off' :label="`${status.value === 'on' ? 'Prendido' : 'Apagado' }`"/>
       </v-col>
       <v-col align="flex-end">
         <v-switch v-model="status.active" />
@@ -39,7 +39,7 @@ const intensity = ref({ value: "100", active: true });
             </v-card>
           </div>
         </v-menu>
-        <p class="text ml-2">Hexa: </p>
+        <p class="text ml-2">Hexa: {{ color.value }}</p>
         </v-col>
         <v-col>
           <v-switch hide-details width="auto" v-model="color.active"/>
@@ -48,7 +48,7 @@ const intensity = ref({ value: "100", active: true });
     <v-row align="center" justify="space-between" no-gutters>
       <v-col cols="10">
         <v-row align="center">
-          <p class="text ml-3">Intensidad: </p> 
+          <p class="text ml-3">Intensidad: {{intensity.value}}</p> 
           <div class="div_width">
             <v-slider color="#146C94" :max="100" :step="1" hide-details v-model="intensity.value"/>
           </div>
@@ -62,19 +62,9 @@ const intensity = ref({ value: "100", active: true });
 
 
 <style scoped>
-.light_container {
-  font-family: 'Varela Round', sans-serif;
-  background-color: transparent;
-  border-radius: 20px;
-  opacity: 1 !important;
-  padding-left: 10px;
-  padding-top: 5px;
-  padding-right: 10px;
-  height: 350px;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.div_width {
+  width: 40%;
+  margin-left: 15px;
 }
 .text{
     font-family: 'Varela Round', sans-serif;
