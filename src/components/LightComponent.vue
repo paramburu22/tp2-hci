@@ -15,9 +15,6 @@ const { item } = toRefs(props);
 const toggleFaved = (item) => {
     item.faved = !item.faved;
 }
-function toggleOpen(item) {
-    item.open.value = !item.open.value;
-}
 
 const setBrightness = () => makeAction('setBrightness', item.state.brightness);
 
@@ -46,18 +43,20 @@ async function makeAction(action, value) {
         </v-row>
         <v-divider></v-divider>
         <div class="color_buttons">
-          <v-menu  v-model="colorDialog" :close-on-content-click="false" location="end" >
+          <v-menu  v-model="colorDialog" :persistent="true" :close-on-content-click="false"  location="end" >
               <template v-slot:activator="{ props }" v-slot:prepend>
                 <v-btn v-bind="props" width="100%">Elegir color</v-btn>
               </template>
               <div>
                 <v-card>
-                  <v-color-picker v-model="item.state.color" mode="hexa"/>
-                  <v-btn @click="makeAction('setColor', item.state.color.substring(1))" width="100%" variant="flat">Actualizar</v-btn>
+                  <v-color-picker show-swatches v-model="item.state.color" mode="hexa"/>
+                  <v-btn @click="makeAction('setColor', item.state.color.substring(1)) ; colorDialog = false" width="100%" variant="flat">Actualizar</v-btn>
                 </v-card>
               </div>
           </v-menu>
-          <p class="text ml-2">Hexa: {{item.state.color.charAt(0) === '#' ? item.state.color : '#' + item.state.color}}</p>
+          <v-container v-if= "colorDialog===false">
+            <p class="text">Hexa: {{item.state.color.charAt(0) === '#' ? item.state.color : '#' + item.state.color}}</p>
+          </v-container>
       </div>
         <v-divider></v-divider>
         <v-row class="mt-2">
