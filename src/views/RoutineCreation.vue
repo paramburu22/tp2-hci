@@ -31,7 +31,7 @@ const currentName = ref();
 const devices = ref([]);
 const newDeviceId = ref();
 const newDeviceType = ref();
-const newDeviceAction = ref();
+const newAction = ref();
 
 const routineId = router.currentRoute.value.path.split('/')[2];
 
@@ -213,9 +213,9 @@ const all_actions = [
 
 
 const getActionValue = (id, actionName) => {
-   constdvice = this.devices.find(device => device.id === id);
+   const device = this.devices.find(device => device.id === id);
    if (device){
-    const action = device.actions.find(action => action.name === name);
+    const action = device.actions.find(action => action.name === actionName);
     if (action) {
       return action.value;
     }
@@ -226,6 +226,8 @@ const getActionValue = (id, actionName) => {
 function toggleOpen() {
     open.value = !open.value;
     newDeviceId.value = null;
+    newDeviceType.value = null;
+    newAction.value = null;
 }
 function setToast(text, color) {
     toastColor.value = color;
@@ -308,7 +310,7 @@ async function createDevice() {
 
   const goBack = computed(() => (() => {
     loading.value = true;
-    router.push('/misdispositivos');
+    router.push('/misrutinas');
   }));
 
   async function editRoom () {
@@ -385,12 +387,17 @@ async function createDevice() {
         item-title="name"
         item-value="id"
         label="Seleccione un dispositivo"
-        @update:modelValue="(value) => newDeviceType.value = deviceStore.devices.find(device => device.id === value).type.id"
+        @update:modelValue="(value) => {
+          newAction = null;
+          newDeviceType = deviceStore.devices.find(device => device.id === value).type.id;
+        }"
       />
       <v-select
         v-model="newAction"
-        :items="all_actions.filter(action => action.id === newDeviceId).actions"
-        item-title=""
+        :items="(newDeviceType && all_actions.find(action => action.id === newDeviceType).actions)"
+        item-title="value"
+        item-value="name"
+        label="Seleccione una acción"
       />
       <v-row class="buttons_container" no-gutters>
         <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
