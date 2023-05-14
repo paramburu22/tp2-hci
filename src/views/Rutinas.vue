@@ -2,7 +2,7 @@
 import NavBarComponent from '@/components/NavBarComponent.vue';
 import { useRoutineStore } from '@/stores/routineStore';
 import { useRouter } from 'vue-router';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useDeviceStore } from '@/stores/deviceStore';
 
 const deviceStore = useDeviceStore();
@@ -12,44 +12,23 @@ const router = useRouter();
 const loading = ref(null);
 const save = ref(false);
 const currentName = ref();
+const controller = ref();
 
-const updateContent = (e)  => {
-  save.value = true;
-  const inputText = e.target.innerText;
-  currentName.value = inputText;
-}
-
-async function deleteRoutine() {
-    try {
-      loading.value = true;
-      await routineStore.remove(routineId);
-      setToast(`Dispositivo eliminado con éxito`, "blue");
-      router.push('/misdispositivos');
-    } catch (e) {
-      setToast(`Error al eliminar el dispositivo`, "#FF6666");
-    } finally {
-      setSnackBarTrue();
-      loading.value = false;
-    }
-  }
-
-async function editRoutines() {
+async function getAllRoutines() {
   try {
-    await routineStore.modify(routineId, currentName.value.trim());
-    setToast(`Habitación editada con éxito`, "blue");
+    loading.value = true;
+    controller.value = new AbortController()
+    const routines = await routineStore.getAll(controller.value)
+    controller.value = null;
   } catch (e) {
-    setToast(`Error al editar la habitación`, "#FF6666");
   } finally {
-    setSnackBarTrue();
-    save.value = false;
+    loading.value = false;
   }
 }
 
-const goBack = computed(() => (() => {
-  loading.value = true;
-  router.push('/misdispositivos');
-}));
-
+onMounted(async () => {
+  await getAllRoutines();
+})
 const goToRoutineCreation = computed(() => () => router.push('/routinecreation'));
 </script>
 
@@ -60,8 +39,8 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
           <v-container>
              <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
               <h2 v-else-if="routineStore.routines.length == 0" class="no_rooms_text">No hay rutinas creadas</h2>
-              <v-row v-else class="rooms_container" cols="2">
-                <v-card v-for="(routine) in routineStore.routines.reverse()"
+              <v-row v-else class="rooms_container">
+                <v-card v-for="(routine) in routineStore.routines"
                   class="card_container" 
                   @click="navigate(routine.id)"
                 >
@@ -99,6 +78,8 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
   min-width: 400px;
   max-width: 90%;
   padding-bottom: 30px;
+  margin-left: 30px;
+  margin-right: 15px;
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }

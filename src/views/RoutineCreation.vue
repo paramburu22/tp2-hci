@@ -5,6 +5,7 @@ import { useDeviceStore } from '@/stores/deviceStore';
 import { useRoomStore } from '@/stores/roomStore';
 import { useRoutineStore } from '@/stores/routineStore';
 import { useRouter } from 'vue-router';
+import { Routine } from '@/api/routine'
 
 const deviceStore = useDeviceStore();
 const roomStore = useRoomStore();
@@ -12,7 +13,6 @@ const routineStore = useRoutineStore();
 const router = useRouter();
 
 const open = ref(false);
-const colorDialog = ref(false);
 const snackbar = ref(false); 
 const toastText = ref(null);
 const controller = ref(null);
@@ -20,8 +20,8 @@ const loading = ref(null);
 const toastColor = ref(null);
 const save = ref(false);
 const currentName = ref();
+const routineName = ref((routineStore.currentRoutine && routineStore.currentRoutine.name))
 
-const devices = ref([]);
 const newDeviceId = ref();
 const newDeviceType = ref();
 const newAction = ref();
@@ -30,24 +30,28 @@ const newActionParamsValue = ref();
 
 const routineId = router.currentRoute.value.path.split('/')[2];
 
-const currentRoutines = computed(() => deviceStore.devices.filter((device) => (device.room && device.room.id) === routineId));
-
 const getActionValue = (id, actionName) => {
-   const device = this.devices.find(device => device.id === id);
-   if (device){
-    const action = device.actions.find(action => action.name === actionName);
-    if (action) {
-      return action.value;
-    }
+  const deviceTypeId = deviceStore.devices.find(device => device.id === id).type.id;
+  return routineStore.allActions.find(action => action.id === deviceTypeId).actions.find(action => action.name === actionName).value;
+};
+
+const getActionParam = (id, actionName, actionParam) => {
+  const deviceTypeId = deviceStore.devices.find(device => device.id === id).type.id;
+  const action = routineStore.allActions.find(device => device.id === deviceTypeId).actions.find(action => (action.name === actionName && action.component === 'select'));
+  if(action) {
+    const finalAction = action.options.find(option => option.value === actionParam);
+    return finalAction.label;
   }
-  return null;
-}
+  return actionParam
+};
 
 function toggleOpen() {
     open.value = !open.value;
     newDeviceId.value = null;
     newDeviceType.value = null;
     newAction.value = null;
+    newActionParams.value = null;
+    newActionParamsValue.value = null;
 }
 function setToast(text, color) {
     toastColor.value = color;
@@ -70,62 +74,19 @@ async function getAllDevices() {
     }
 }
 
-async function getRoom() {
-  try {
+  async function createRoutine() {
     loading.value = true;
-    controller.value = new AbortController()
-    currentRoom = await roomStore.getRoom(routineId)
-    controller.value = null
-  } catch (e) {
-  } finally {
-    loading.value = false;
-  }
-}
-
-onMounted(async () => {
-    await getAllDevices();
-    await getRoom();
-})
-
-async function createDevice() {
-  const device = deviceStore.devices.find(device => {
-   return device.id === newDeviceId.value
-  });
-  if(device) {
-    devices.value.push(device);
-  }
-  toggleOpen();
-}
-  
-  async function deleteDevice(id) {
-    try {
-      deviceStore.remove(id);
-      setToast(`Dispositivo eliminado con éxito`, "blue");
-    } catch (e) {
-      setToast(`Error al eliminar el dispositivo`, "#FF6666");
-    } finally {
-      setSnackBarTrue();
-    }
-  }
-
-  async function deleteRoom() {
-    try {
-      loading.value = true;
-      await roomStore.remove(routineId);
-      setToast(`Dispositivo eliminado con éxito`, "blue");
-      router.push('/misdispositivos');
-    } catch (e) {
-      setToast(`Error al eliminar el dispositivo`, "#FF6666");
-    } finally {
-      setSnackBarTrue();
-      loading.value = false;
-    }
-  }
-
-  const updateContent = (e)  => {
-    save.value = true;
-    const inputText = e.target.innerText;
-    currentName.value = inputText;
+    const routine = new Routine(null, routineStore.currentRoutine.name, routineStore.currentRoutine.actions);
+      try {
+        routine.value = await routineStore.add(routine);
+        setToast(`Rutina con éxito`, "blue");
+        router.push('/misrutinas');
+      } catch (e) {
+        setToast(`Error al crear la rutina`, "#FF6666");
+      } finally {
+        setSnackBarTrue();
+        loading.value = false;
+      }
   }
 
   const goBack = computed(() => (() => {
@@ -133,19 +94,8 @@ async function createDevice() {
     router.push('/misrutinas');
   }));
 
-  async function editRoom () {
-    try {
-      await roomStore.modify(routineId, currentName.value.trim());
-      setToast(`Habitación editada con éxito`, "blue");
-    } catch (e) {
-      setToast(`Error al editar la habitación`, "#FF6666");
-    } finally {
-      setSnackBarTrue();
-      save.value = false;
-    }
-  }
-
-  const increaseTemp = () => {
+  //For AC
+  const increaseAirTemp = () => {
     if(!newActionParamsValue.value) {
       newActionParamsValue.value = 24;
     }
@@ -153,8 +103,7 @@ async function createDevice() {
       newActionParamsValue.value++;
     }
   };
-
-  const decreaseTemp = () => {
+  const decreaseAirTemp = () => {
     if(!newActionParamsValue.value) {
       newActionParamsValue.value = 24;
     }
@@ -162,6 +111,52 @@ async function createDevice() {
       newActionParamsValue.value--;
     };
   }
+  
+//For Oven
+  const increaseOvenTemp = () => {
+    if(!newActionParamsValue.value) {
+      newActionParamsValue.value = 90;
+    }
+    if (newActionParamsValue.value < 230) {
+      newActionParamsValue.value++;
+    }
+  };
+  const decreaseOvenTemp = () => {
+    if(!newActionParamsValue.value) {
+      newActionParamsValue.value = 90;
+    }
+    if (newActionParamsValue.value > 80) {
+      newActionParamsValue.value--;
+    };
+  }
+
+  const addRoutineAction = () => {
+  const action = {
+    device: { id: newDeviceId.value },
+    actionName: newAction.value,
+    params: newActionParamsValue.value ? [ newActionParamsValue.value ] : [],
+  };
+
+  routineStore.currentRoutine.actions.push(action);
+  toggleOpen();
+}
+
+
+  const deleteAction = (deviceId, actionName) => {
+    const index = routineStore.currentRoutine.actions.findIndex(action => action.device.id === deviceId && action.actionName === actionName);
+    if (index > -1) {
+      routineStore.currentRoutine.actions.splice(index, 1);
+    }
+  }
+
+
+  onMounted(async () => {
+    await getAllDevices();
+    routineStore.currentRoutine = {
+      name: 'Rutina ' + (routineStore.routines && routineStore.routines.length + 1), 
+      actions: [],
+    };
+  })
 
 </script>
 
@@ -171,42 +166,34 @@ async function createDevice() {
     <v-main class="bg"> 
       <v-container>
           <v-card class="card_container">
-            <v-list-item class="card_title">
-                <div class="edit_title">
-                  <v-card-item width="70%" contenteditable @input="updateContent($event)" class="title">
-                    {{ currentName || 'Rutina ' + (routineStore.routines.length + 1)}}
-                  </v-card-item>
-                  <v-btn @click="editRoom" :disabled="!save" plain>Guardar</v-btn>
-                </div>
+            <v-list-item>
+                <v-card-title class="title card_title">
+                  <v-text-field v-model="routineName" />
+                </v-card-title>
                 <template v-slot:append>
-                    <v-btn variant="text" size="x-large" icon @click="deleteRoom">
-                      <v-icon color="red">mdi-delete</v-icon>
-                    </v-btn>
+                  <v-btn @click="createRoutine" :disabled="(!routineStore.currentRoutine || routineStore.currentRoutine.actions.length == 0)" plain>Crear Rutina</v-btn>
                 </template>
                 <template v-slot:prepend>
-                    <v-btn variant="text" size="x-large" icon @click="goBack">
+                    <v-btn  variant="text" size="x-large" icon @click="goBack">
                       <v-icon color="#146C94">mdi-chevron-left</v-icon>
                     </v-btn>
                 </template>
-            </v-list-item> 
+            </v-list-item>
             <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
-            <h2 v-else-if="devices.length == 0" class="no_rooms_text">No hay acciones creadas</h2>
+            <h2 v-else-if="(!routineStore.currentRoutine || routineStore.currentRoutine.actions.length == 0)" class="no_rooms_text">No hay acciones creadas</h2>
             <v-row v-else class="cards_render">
-              <v-col v-for="(device) in devices" class="cards_columns">
+              <v-col v-for="(action) in (routineStore.currentRoutine && routineStore.currentRoutine.actions)" class="cards_columns">
                 <v-card class="card_item">
                   <v-row>
                     <v-col>
-                      <p class="title">{{device.name}}</p>
-                      <p class="subtitle">{{device.room.name}}</p>
+                      <p class="title ml-3 mt-2">{{action.name || deviceStore.devices.find(device => device.id === action.device.id).name}}</p>
                     </v-col>
-                    <v-col>
-                        <v-card v-for ="(action, index) in device.actions" :key="index">
-                          <p class="device_action">{{getActionValue(device.id, action.name)}}: {{action.params}}</p>
-                        </v-card>
-                    </v-col> 
+                  </v-row>
+                  <v-row>
+                    <p class="subtitle">{{`${getActionValue(action.device.id, action.actionName)}${action.params.length > 0 ? ' : ' + getActionParam(action.device.id, action.actionName, action.params[0]) : '' }`}}</p>
                   </v-row>
                   <v-btn icon variant="flat" color="transparent">
-                    <v-icon @click="deleteRoutine(routine.id)">mdi-delete-outline</v-icon>
+                    <v-icon @click="deleteAction(action.device.id, action.actionName)">mdi-delete-outline</v-icon>
                   </v-btn>
                 </v-card> 
               </v-col>
@@ -250,19 +237,43 @@ async function createDevice() {
           <v-slider :step="newActionParams.step" :min="newActionParams.min" :max="newActionParams.max" v-model="newActionParamsValue" />
         </div>
         <v-select :items="newActionParams.options" v-if="newActionParams && newActionParams.component === 'select'" label="Seleccione una opción" v-model="newActionParamsValue" item-value="value" item-title="label" />
-        <v-row align="center" justify="center" v-if="newAction === 'setTemperature'">
-          <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp()">
+        <v-row align="center" justify="center" v-if="newAction === 'setTemperature' && newDeviceType !== 'im77xxyulpegfmv8'">
+          <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseAirTemp()">
               <v-icon>mdi-minus</v-icon>
           </v-btn>
           <p>{{ newActionParamsValue || 24 }}°</p>
-          <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseTemp()">
+          <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseAirTemp()">
+              <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-row>
+        <v-row class="mt-2 mb-4" align="center" justify="center" v-if="newAction === 'setTemperature' && newDeviceType === 'im77xxyulpegfmv8'">
+          <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseOvenTemp()">
+              <v-icon>mdi-minus</v-icon>
+          </v-btn>
+          <v-text-field
+            v-model="newActionParamsValue"
+            :min="80"
+            :max="230"
+            type="number"
+            density="compact"
+            hide-details
+            variant="outlined"
+            class="col-12 col-sm-4"
+            :rules="[v => (Number(v) > 80 && Number(v) < 230) || 'La temperatura debe estar entre 80 y 230']"
+            placeholder="Seleccione valores entre 80 y 230"
+          >
+            <template #error="{ errors }">
+              <span class="text--error">{{ errors[0] }}</span>
+            </template>
+          </v-text-field>
+          <v-btn :icon="true"  variant="flat" color="transparent" @click="increaseOvenTemp()">
               <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-row>
       </div>
       <v-row class="buttons_container" no-gutters>
         <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
-        <v-btn tonal color="blue" @click="createDevice()">Crear</v-btn>
+        <v-btn tonal color="blue" @click="addRoutineAction">Crear</v-btn>
       </v-row>
     </v-card>
   </v-dialog>
@@ -292,21 +303,27 @@ async function createDevice() {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 15px;
+}
+.editable_title {
   text-decoration: underline;
   text-decoration-style: dotted;
   text-underline-offset: 3px;
   color: black;
 }
 
+.card_title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: black;
+  margin-top: 10px;
+  width: 50%;
+}
 .subtitle {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
   color: grey;
 }
 .device_action {
@@ -323,6 +340,7 @@ async function createDevice() {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%
 }
 .card_container{
   border-radius: 20px;
@@ -334,10 +352,6 @@ async function createDevice() {
   padding-bottom: 30px;
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
-}
-
-.card_title {
-  margin-bottom: 15px;
 }
 
 .cards_render {
@@ -361,10 +375,11 @@ async function createDevice() {
   background-color: white;
   border-radius: 20px;
   opacity: 1 !important;
-  width: 250px;
+  width: 350px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
 }
 .add_icon {
   position: fixed;

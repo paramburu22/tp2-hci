@@ -165,7 +165,7 @@ export const useRoutineStore = defineStore('routine', () => {
                 value: 'off'
               },
               {
-                label:'Economico',
+                label:'Económico',
                 value: 'eco'
               },
               {
@@ -321,7 +321,6 @@ export const useRoutineStore = defineStore('routine', () => {
           }
         ],
       },
-      ,
       {
         id: 'lsf78ly0eqrjbz91',
         actions: [{
