@@ -43,7 +43,7 @@ async function makeAction(action, value) {
         </v-row>
         <v-divider></v-divider>
         <div class="color_buttons">
-          <v-menu  v-model="colorDialog" :persistent="true" :close-on-content-click="false"  location="end" >
+          <v-menu v-model="colorDialog" :persistent="true" :close-on-content-click="false"  location="end" >
               <template v-slot:activator="{ props }" v-slot:prepend>
                 <v-btn v-bind="props" width="100%">Elegir color</v-btn>
               </template>
