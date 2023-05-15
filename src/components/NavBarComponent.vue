@@ -18,20 +18,18 @@
         >{{ item.displayName }}
         </v-btn>
       </v-list>
-      <v-btn width="210" prepend-icon="mdi-logout" variant="text" class="close_button text-left ml-5 mt-15 mb-5" style="justify-content: flex-start">Cerrar Sesión</v-btn>
+      <v-btn width="210" prepend-icon="mdi-logout" variant="text" class="close_button text-left ml-5 mt-15 mb-5" style="justify-content: flex-start" @click=navigate()>Cerrar Sesión</v-btn>
     </div>
   </v-navigation-drawer>
   <v-app-bar height="80" class="app_bar_content">
-    <HomesButtonComponent v-if="isHome"/>
     <template v-slot:append>
-      <v-btn icon="mdi-account" @click="navigate('usuario')"/>
+      <v-icon>mdi-account</v-icon>
     </template>
   </v-app-bar>
 </template>
 
 <script setup>
   import LogoComponent from './LogoComponent.vue';
-  import HomesButtonComponent from './HomesButtonComponent.vue';
   import { useRouter } from 'vue-router';
   import { ref, computed } from 'vue';
 
@@ -43,25 +41,23 @@
       routeName:"home",
     },
     {
-      icon: "mdi-devices",
-      displayName: "Mis Dispositivos",
-      routeName: "misdispositivos",
-    },
-    {
       icon: "mdi-clipboard-check-multiple",
       displayName: "Mis Rutinas",
-      routeName: "misrutinas",
+      routeName: "myroutines",
     },
     {
       icon: "mdi-help-circle-outline",
       displayName: "Ayuda",
-      routeName: "misrutinas",
+      routeName: "help",
     },
   ]);
 
   const router = useRouter();
 
   function navigate(route) {
+    if (!route) {
+      return router.push('/');
+    }
     return router.push(`/${route.toLowerCase()}`);
   }
 

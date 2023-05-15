@@ -14,18 +14,9 @@
       <Logo />
     </v-row>
     <v-row class="justify-space-between middle_container mt-10 align-center">
-      <v-col cols="7" class="title_container">
+      <v-col class="center_col">
         <h2 class="slogan_text">LISTOS PARA HACER TU VIDA MEJOR</h2>
-      </v-col>
-      <v-col cols="5">
-        <v-card class="d-flex flex-column py-10 px-12 card_container align-center justify-space-between">
-          <v-card-title class="card_forms card_title">INICIAR SESION</v-card-title>
-          <v-text-field label="Email" placeholder="alfrepincha07@gmail.com" clearable :rules="[required]" class="input_text"/>
-          <v-text-field  label="Contraseña" :rules="[required]" class="input_text"/>
-          <v-btn density="default" class="submit_button card_forms" @click="navigate">Ingresar</v-btn>
-          <a class="anchortag card_forms" href="https://www.w3schools.com">Olvidé mi contraseña</a>
-          <a class="anchortag" href="https://www.w3schools.com">¿No tienes una cuenta?</a>
-        </v-card>
+        <v-btn density="default" class="submit_button card_forms" @click="navigate">Ingresar</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -49,6 +40,7 @@
   color: rgb(242, 242, 242);
   font-family: 'Varela Round', sans-serif;
   font-size: 70px;
+  text-align: center;
 }
 
 .middle_container {
@@ -56,32 +48,22 @@
   padding-right: 20px;
 }
 
-.card_container {
-  color: rgb(20, 108, 148);
-  font-family: 'Varela Round', sans-serif;
-  border-radius: 20px;
-  background-color: #EDF1F4;
-}
-.anchortag {
-  font-size: 20px;
-}
 
-.input_text {
-  font-size: 20px;
-  width: 100%;
-}
-
-.card_title {
-  font-weight: lighter;
-  font-size: 36px;
-}
 .card_forms {
-  margin-bottom: 20px
+  margin-top: 75px;
 }
 .submit_button {
   color: rgb(242, 242, 242);
-  background-color: #88c9f9;
-  width: 100%;
+  background-color: #2b8ed5;
+  font-family: 'Varela Round', sans-serif;
+  font-size: 25px;
+  width: 30%;
+}
+
+.center_col {
+  justify-content: center;
+justify-items: center;
+display: grid;
 }
 
 </style>

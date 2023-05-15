@@ -69,6 +69,7 @@ async function getAllDevices() {
       const devices = await deviceStore.getAll(controller.value)
       controller.value = null
     } catch (e) {
+      setToast(`Ha ocurrido un error al traer los dispositivos: ${e && e.description}`, "red");
     } finally {
       loading.value = false;
     }
@@ -80,9 +81,9 @@ async function getAllDevices() {
       try {
         routine.value = await routineStore.add(routine);
         setToast(`Rutina con éxito`, "blue");
-        router.push('/misrutinas');
+        router.push('/myroutines');
       } catch (e) {
-        setToast(`Error al crear la rutina`, "#FF6666");
+        setToast(`Ha ocurrido un error al crear la rutina: ${e && e.description}`, "red");
       } finally {
         setSnackBarTrue();
         loading.value = false;
@@ -91,7 +92,7 @@ async function getAllDevices() {
 
   const goBack = computed(() => (() => {
     loading.value = true;
-    router.push('/misrutinas');
+    router.push('/myroutines');
   }));
 
   //For AC

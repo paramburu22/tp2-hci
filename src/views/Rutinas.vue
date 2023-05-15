@@ -14,6 +14,8 @@ const controller = ref(null);
 const loading = ref(null);
 const toastColor = ref(null);
 
+const toastOpen = ref();
+
 async function getAllRoutines() {
   try {
     loading.value = true;
@@ -21,6 +23,21 @@ async function getAllRoutines() {
     const routines = await routineStore.getAll(controller.value)
     controller.value = null;
   } catch (e) {
+    toastText.value = `Ha ocurrido un error al obtener rutinas: ${e && e.description}`
+    toastOpen.value = open;
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function getAllDevices() {
+  try {
+    loading.value = true;
+    controller.value = new AbortController()
+    const devices = await deviceStore.getAll(controller.value)
+    controller.value = null
+  } catch (e) {
+    setToast(`Ha ocurrido un error al obtener los dispositivos: ${e && e.description}`, "red");
   } finally {
     loading.value = false;
   }
@@ -64,6 +81,7 @@ const getActionParam = (id, actionName, actionParam) => {
 };
 
 onMounted(async () => {
+  await getAllDevices();
   await getAllRoutines();
 })
 
@@ -88,7 +106,7 @@ async function executeActions(routine){
       <v-main class="bg"> 
           <v-container>
              <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
-              <h2 v-else-if="routineStore.routines.length == 0" class="no_rooms_text">No hay rutinas creadas</h2>
+              <h2 v-else-if="!(routineStore.routines || routineStore.routines.length == 0)" class="no_rooms_text">No hay rutinas creadas</h2>
               <v-row v-else class="rooms_container">
                 <v-card v-for="(routine) in routineStore.routines"
                   class="card_container" 
@@ -103,7 +121,7 @@ async function executeActions(routine){
                   <v-card class="card_item">
                     <v-row>
                       <v-col>
-                        <p class="title ml-3 mt-2">{{action.name || deviceStore.devices.find(device => device.id === action.device.id).name}}</p>
+                        <p class="title ml-3 mt-2">{{action.name || (deviceStore.devices && deviceStore.devices.find(device => device.id === action.device.id).name)}}</p>
                       </v-col>
                     </v-row>
                     <v-row>
@@ -124,6 +142,14 @@ async function executeActions(routine){
           </v-container> 
           <v-icon class="add_icon" @click="goToRoutineCreation">mdi-plus-circle-outline</v-icon>
       </v-main>
+      <v-snackbar
+        v-model="toastOpen"
+        timeout=2000
+        color="red"
+        width="auto"
+      >
+        {{ toastText }}
+    </v-snackbar>
   </v-layout>
   
 </template>

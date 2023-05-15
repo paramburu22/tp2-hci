@@ -1,5 +1,4 @@
-<!-- Light Features: Encender, Apagar, Intensidad, Color -->
-<!-- icon:'mdi-lightbulb'-->
+
 <script setup>
 import { useDeviceStore } from '@/stores/deviceStore';
 import { defineProps, toRefs, ref } from 'vue';
@@ -16,24 +15,25 @@ const toggleFaved = (item) => {
     item.faved = !item.faved;
 }
 
+const toastOpen = ref(false);
+const toastText = ref('');
+
+
 async function makeAction(action, value) {
     try {
       await deviceStore.makeAction(item.value.id, action, value);
     } catch (e) {
-      // Handlear errores
+      toastText.value = e.description;
+      toastOpen.value = true;
     }
   }
 </script>
 
 <template> 
-    <v-card class="light_container">
-        <v-row class="mt-1 mb-6" cols="3">
-            <v-icon class="mt-3 ml-3" color="#146C94">mdi-door</v-icon>
-            <p class="heading mt-3 ml-3">{{item.name}}</p> <!-- el titulo pasado como param-->
-            <v-spacer></v-spacer>
-            <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved(item)">
-                <v-icon color="#146C94">{{ item.faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-            </v-btn>
+    <v-card class="door_container">
+        <v-row class="same_line">
+            <v-icon class="mr-3" color="#146C94">mdi-door</v-icon>
+            <h4>{{item.name}}</h4>
           </v-row>
         <v-divider></v-divider>
         <v-row class="mt-6 ml-4 mb-2" >
@@ -50,23 +50,35 @@ async function makeAction(action, value) {
             </v-container>
         </v-row>
     </v-card>
+    <v-snackbar
+        v-model="toastOpen"
+        timeout=2000
+        color="red"
+        width="auto"
+    >
+        {{ toastText }}
+    </v-snackbar>
 </template>
 
 
 
 <style scoped>
-.light_container {
+.door_container {
   font-family: 'Varela Round', sans-serif;
   background-color: transparent;
   border-radius: 20px;
   opacity: 1 !important;
-  padding-left: 10px;
-  padding-top: 5px;
-  padding-right: 10px;
-  height: 350px;
   justify-content: center;
   flex-direction: column;
   gap: 15px;
+}
+.same_line{
+  justify-content: center;
+  padding: 15px;
+  flex-wrap: nowrap;
+  margin: 0;
+  align-items: center;
+    max-height: 54px;
 }
 .title{
     font-family: 'Varela Round', sans-serif;

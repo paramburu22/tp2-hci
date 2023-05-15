@@ -74,6 +74,7 @@ async function getAllDevices() {
       const devices = await deviceStore.getAll(controller.value)
       controller.value = null
     } catch (e) {
+      setToast(`Ha ocurrido un error al obtener los dispositivos: ${e && e.description}`, "red");
     } finally {
       loading.value = false;
     }
@@ -86,6 +87,7 @@ async function getRoom() {
     currentRoom = await roomStore.getRoom(roomId)
     controller.value = null
   } catch (e) {
+    setToast(`Ha ocurrido un error al obtener la habitación: ${e && e.description}`, "red");
   } finally {
     loading.value = false;
   }
@@ -105,7 +107,7 @@ async function createDevice() {
       deviceStore.addDeviceToRoom(roomId, device.value.id);
       setToast(`Dispositivo creado "${capitalizedDevice}" con éxito`, "blue");
     } catch (e) {
-      setToast(`Error al crear la habitación "${capitalizedDevice}"`, "#FF6666");
+      setToast(`Ha ocurrido un error al crear el dispositivo "${capitalizedDevice}": ${e && e.description}`, "red");
     } finally {
       toggleOpen();
       setSnackBarTrue();
@@ -115,10 +117,10 @@ async function createDevice() {
   
   async function deleteDevice(id) {
     try {
-      deviceStore.remove(id);
+      await deviceStore.remove(id);
       setToast(`Dispositivo eliminado con éxito`, "blue");
     } catch (e) {
-      setToast(`Error al eliminar el dispositivo`, "#FF6666");
+      setToast(`Ha ocurrido un error al eliminar el dispositivo: ${e && e.description}`, "red");
     } finally {
       setSnackBarTrue();
     }
@@ -126,12 +128,16 @@ async function createDevice() {
 
   async function deleteRoom() {
     try {
+      const ids = currentDevices.value.map(device => device.id);
       loading.value = true;
+      for(let i = 0 ; i < ids.length ; i++) {
+        await deleteDevice(ids[i]);
+      }
       await roomStore.remove(roomId);
-      setToast(`Dispositivo eliminado con éxito`, "blue");
-      router.push('/misdispositivos');
+      setToast(`Habitación eliminada con éxito`, "blue");
+      router.push(`/mydevices/${roomStore.currentRoom.home.id}`);
     } catch (e) {
-      setToast(`Error al eliminar el dispositivo`, "#FF6666");
+      setToast(`Ha ocurrido un error al eliminar la habitación: ${e && e.description}`, "red");
     } finally {
       setSnackBarTrue();
       loading.value = false;
@@ -146,7 +152,7 @@ async function createDevice() {
 
   const goBack = computed(() => (() => {
     loading.value = true;
-    router.push('/misdispositivos');
+    router.push(`/mydevices/${roomStore.currentRoom.home.id}`);
   }));
 
   async function editRoom () {
@@ -154,7 +160,7 @@ async function createDevice() {
       await roomStore.modify(roomId, currentName.value.trim());
       setToast(`Habitación editada con éxito`, "blue");
     } catch (e) {
-      setToast(`Error al editar la habitación`, "#FF6666");
+      setToast(`Ha ocurrido un error al editar la habitación: ${e && e.description}`, "red");
     } finally {
       setSnackBarTrue();
       save.value = false;

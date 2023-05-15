@@ -12,22 +12,17 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
-      component: () => import("../views/HomeScreen.vue"),
+      component: () => import("../views/Homes.vue"),
     },
     {
-      path: '/misdispositivos',
-      name: 'misdispositivos',
+      path: '/mydevices/:id',
+      name: 'mydevices',
       component: () => import("../views/MisDispositivos.vue"),
     },
     {
-      path: '/misrutinas',
-      name: 'misrutinas',
+      path: '/myroutines',
+      name: 'myroutines',
       component: () => import("../views/Rutinas.vue")
-    },
-    {
-      path: '/usuario',
-      name: 'usuario',
-      component: () => import("../views/User.vue"),
     },
     {
       path: '/room/:id',
@@ -38,7 +33,12 @@ const router = createRouter({
       path: '/routinecreation',
       name:'routinecreation',
       component: () => import("../views/RoutineCreation.vue"),
-    }
+    },
+    {
+      path: '/help',
+      name: 'help',
+      component: () => import("../views/Help.vue")
+    },
   ]
   
 })

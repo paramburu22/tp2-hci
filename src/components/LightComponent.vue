@@ -16,30 +16,30 @@ const toggleFaved = (item) => {
     item.faved = !item.faved;
 }
 
+const toastOpen = ref(false);
+const toastText = ref('');
+
 const setBrightness = () => makeAction('setBrightness', item.state.brightness);
 
 async function makeAction(action, value) {
     try {
       await deviceStore.makeAction(item.value.id, action, value);
     } catch (e) {
-      // Handlear errores
+      toastText.value = e.description;
+      toastOpen.value = true;
     }
   }
 </script>
 
 <template> 
     <v-card class="light_container">
-        <v-row class="mt-1" cols="3">
-            <v-icon class="mt-3 ml-3" color="#146C94">mdi-lightbulb</v-icon>
-            <p class="heading mt-3 ml-3">{{item.name}}</p> <!-- el titulo pasado como param-->
-            <v-spacer></v-spacer>
-            <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved(item)">
-                <v-icon color="#146C94">{{ item.faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-            </v-btn>
+        <v-row class="same_line">
+            <v-icon class="mr-3" color="#146C94">mdi-lightbulb</v-icon>
+            <h4>{{item.name}}</h4>
           </v-row>
         <v-divider></v-divider>
-        <v-row>
-            <v-switch color="#146C94" class="mt-2 ml-4" v-model="item.state.status" true-value='on' false-value='off' @update:modelValue="(value) => value === 'on' ? makeAction('turnOn') : makeAction('turnOff')" :label="`${item.state.status === 'on' ? 'Prendido' : 'Apagado' }`"/>
+        <v-row justify="center" align="center">
+            <v-switch color="#146C94" class=" ml-4" v-model="item.state.status" true-value='on' false-value='off' @update:modelValue="(value) => value === 'on' ? makeAction('turnOn') : makeAction('turnOff')" :label="`${item.state.status === 'on' ? 'Prendido' : 'Apagado' }`"/>
         </v-row>
         <v-divider></v-divider>
         <div class="color_buttons">
@@ -64,6 +64,14 @@ async function makeAction(action, value) {
             <v-slider color="#146C94" class="ml-5 mr-5" width="30px" v-model="item.state.brightness" :max="100" :step="1" @click="setBrightness"></v-slider>
         </v-row>
     </v-card>
+    <v-snackbar
+        v-model="toastOpen"
+        timeout=2000
+        color="red"
+        width="auto"
+    >
+        {{ toastText }}
+    </v-snackbar>
 </template>
 
 
@@ -75,13 +83,12 @@ async function makeAction(action, value) {
   border-radius: 20px;
   opacity: 1 !important;
   padding-left: 10px;
-  padding-top: 5px;
   padding-right: 10px;
   height: 350px;
   justify-content: center;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+
 }
 .text{
     font-family: 'Varela Round', sans-serif;
@@ -94,5 +101,14 @@ async function makeAction(action, value) {
   flex-direction: column;
   align-items: center;
   gap: 5px;
+}
+
+.same_line{
+  justify-content: center;
+    margin: 0;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding: 15px;
+    max-height: 54px;
 }
 </style>

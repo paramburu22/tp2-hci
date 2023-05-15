@@ -8,7 +8,6 @@ export const useRoomStore = defineStore('room', () => {
 
     async function add(room) {
         const result = await RoomApi.add(room)
-        await getAll()
         return Object.assign(new Room(), result)
     }
     async function modify(roomId, roomName) {
@@ -35,5 +34,11 @@ export const useRoomStore = defineStore('room', () => {
       currentRoom.value = response;
     }
 
-    return { rooms, currentRoom, add, modify, remove, getAll, getRoom }
+    
+    async function addRoomToHome(homeId, roomId) {
+        const response = await RoomApi.addRoomToHome(homeId, roomId);
+        await getAll();
+    }
+
+    return { rooms, currentRoom, add, modify, remove, getAll, getRoom, addRoomToHome }
 })

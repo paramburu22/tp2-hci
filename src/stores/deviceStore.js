@@ -5,18 +5,18 @@ import { Device, DeviceApi } from "@/api/device";
 export const useDeviceStore = defineStore('device', () => {
     const devices = ref([]);
 
-    async function add(device) {
-        const result = await DeviceApi.add(device)
+    async function add(device, controller = null) {
+        const result = await DeviceApi.add(device, controller)
         return Object.assign(new Device(), result)
     }
-    async function modify(device) {
-        const result = await DeviceApi.modify(device)
+    async function modify(device, controller = null) {
+        const result = await DeviceApi.modify(device, controller)
         await getAll()
         return result
     }
 
-    async function remove(id) {
-        const result = await DeviceApi.remove(id)
+    async function remove(id, controller = null) {
+        const result = await DeviceApi.remove(id, controller)
         await getAll()
         return result
     }
@@ -28,13 +28,13 @@ export const useDeviceStore = defineStore('device', () => {
         return result
     }
 
-    async function addDeviceToRoom(roomId, deviceId) {
-      const response = await DeviceApi.addDeviceToRoom(roomId, deviceId)
+    async function addDeviceToRoom(roomId, deviceId, controller = null) {
+      const response = await DeviceApi.addDeviceToRoom(roomId, deviceId, controller)
       await getAll()
     }
 
-    async function makeAction(deviceId, action, value) {
-        const response = await DeviceApi.makeAction(deviceId, action, value)
+    async function makeAction(deviceId, action, value, controller = null) {
+        const response = await DeviceApi.makeAction(deviceId, action, value, controller)
         return response;
     }
 

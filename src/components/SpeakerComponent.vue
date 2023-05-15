@@ -45,6 +45,10 @@ import { useDeviceStore } from '@/stores/deviceStore';
   
   const playlist = ref([]);
 
+  const toastOpen = ref(false);
+  const toastText = ref('');
+
+
   const toggleFaved = () => {
       item.faved = !item.faved;
   };
@@ -132,13 +136,14 @@ import { useDeviceStore } from '@/stores/deviceStore';
     try {
       await deviceStore.makeAction(item.value.id, action, value).then(value => response = value);
     } catch (e) {
-      // Handlear errores
+      toastText.value = e.description;
+      toastOpen.value = true;
     }
     return response;
   }
 
-  onMounted(() => {
-    getPlaylist();
+  onMounted(async() => {
+    await getPlaylist();
     if(item.value.state.status === 'playing') {
       intervalId = setInterval(() => {
       deviceStore.getDeviceState(item.value.id)
@@ -157,11 +162,10 @@ import { useDeviceStore } from '@/stores/deviceStore';
 </script>
 
 <template>
-  <v-card class="item_card">
-      <v-row class="title" no-gutters>
-          <v-icon color="#146C94">mdi-speaker</v-icon>
-          <p>{{ item.name }}</p> 
-          <v-icon @click="toggleFaved">{{ item.faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+  <v-card>
+      <v-row class="same_line">
+          <v-icon class="mr-3" color="#146C94">mdi-speaker</v-icon>
+          <h4>{{ item.name }}</h4> 
       </v-row>
       <v-divider></v-divider>
       <v-row class="song_container" align-items="center" no-gutters>
@@ -230,14 +234,22 @@ import { useDeviceStore } from '@/stores/deviceStore';
         </v-card>
       </v-dialog>
   </v-card>
+  <v-snackbar
+        v-model="toastOpen"
+        timeout=2000
+        color="red"
+        width="auto"
+    >
+        {{ toastText }}
+    </v-snackbar>
 </template>
 
 <style scoped>
-.title {
-  justify-content: space-between;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+.same_line{
+  justify-content: center;
+  padding: 15px;
+  flex-wrap: nowrap;
+  margin: 0;
   align-items: center;
 }
 .player_container {
@@ -245,6 +257,7 @@ import { useDeviceStore } from '@/stores/deviceStore';
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-bottom: 20px;
 }
 
 .song_info {
@@ -274,6 +287,6 @@ import { useDeviceStore } from '@/stores/deviceStore';
   overflow: hidden;
   padding-bottom: 5px;
   padding-right: 5px;
-  padding-top: 5px;
+  padding-top: 20px;
 }
 </style>

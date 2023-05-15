@@ -24,14 +24,19 @@ class RoomApi {
     static async getRoom(roomId) {
       return await Api.get(RoomApi.getUrl(roomId));
     }
+
+    static async addRoomToHome(homeId, roomId) {
+        return await Api.post(`${Api.baseUrl}/homes/${homeId}/rooms/${roomId}`);
+    }
 }
 
 class Room {
-    constructor(id, name) {
+    constructor(id, name, home) {
         if (id) {
             this.id = id;
         }
         this.name = name;
+        this.home = home;
     }
     toString() {
         return JSON.stringify(this, null, 2);

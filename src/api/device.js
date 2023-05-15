@@ -21,12 +21,12 @@ class DeviceApi {
       return await Api.get(DeviceApi.getUrl(), controller);
     }
 
-    static async addDeviceToRoom(roomId, deviceId) {
-      return await Api.post(`${Api.baseUrl}/rooms/${roomId}/devices/${deviceId}`);
+    static async addDeviceToRoom(roomId, deviceId, controller) {
+      return await Api.post(`${Api.baseUrl}/rooms/${roomId}/devices/${deviceId}`, controller);
     }
 
-    static async makeAction(deviceId, action, value){
-        return await Api.put(`${Api.baseUrl}/devices/${deviceId}/${action}`, value ? [value] : null)
+    static async makeAction(deviceId, action, value, controller){
+        return await Api.put(`${Api.baseUrl}/devices/${deviceId}/${action}`, value ? [value] : null, controller)
     }
 
     static async getDeviceState(deviceId, controller) {

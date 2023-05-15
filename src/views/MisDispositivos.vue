@@ -3,11 +3,13 @@
   import AlarmComponent from '../components/AlarmComponent.vue';
 
   import { useRouter } from 'vue-router';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
   import { useRoomStore } from '@/stores/roomStore';
+  import { useHomeStore } from '@/stores/homeStore';
   import { Room } from '@/api/room'
 
   const roomStore = useRoomStore();
+  const homeStore = useHomeStore();
 
   const router = useRouter();
 
@@ -18,6 +20,10 @@
   const controller = ref(null);
   const loading = ref(null);
   const toastColor = ref(null);
+
+  const homeId = router.currentRoute.value.path.split('/')[2];
+
+  const currentRooms = computed(() => roomStore.rooms.filter((room) => (room.home && room.home.id) === homeId));
 
   function toggleOpen() {
     open.value = !open.value;
@@ -38,9 +44,10 @@
 
     try {
       room.value = await roomStore.add(room);
+      await roomStore.addRoomToHome(homeId, room.value.id);
       setToast(`Habitación creada "${capitalizedRoom}" con éxito`, "blue");
     } catch (e) {
-      setToast(`Error al crear la habitación "${capitalizedRoom}"`, "#FF6666");
+      setToast(`Ha ocurrido un error al crear la habitación "${capitalizedRoom}": ${e.description}`, "red");
     } finally {
       toggleOpen();
       setSnackBarTrue();
@@ -55,6 +62,20 @@
       const rooms = await roomStore.getAll(controller.value)
       controller.value = null
     } catch (e) {
+      setToast(`Ha ocurrido un error al obtener habitaciones: ${e && e.description}`, "red");
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function getHome() {
+    try {
+      loading.value = true;
+      controller.value = new AbortController();
+      await homeStore.getHome(homeId, controller.value);
+      controller.value = null;
+    } catch (e) {
+      setToast(`Ha ocurrido un error al obtener el hogar: ${e && e.description}`, "red");
     } finally {
       loading.value = false;
     }
@@ -62,11 +83,43 @@
 
   onMounted(async () => {
     await getAllRooms();
+    await getHome();
   })
 
   function navigate(roomId) {
     return router.push(`/room/${roomId}`);
   }
+
+  async function deleteRoom(id) {
+    try {
+      await roomStore.remove(id);
+      setToast(`Habitacion eliminada con éxito`, "blue");
+    } catch (e) {
+      setToast(`Ha ocurrido un error al eliminar la habitación: ${e && e.description}`, "red");
+    } finally {
+      setSnackBarTrue();
+    }
+  }
+
+  async function deleteHome() {
+    try {
+      const ids = currentRooms.value.map(device => device.id);
+      loading.value = true;
+      for(let i = 0 ; i < ids.length ; i++) {
+        await deleteRoom(ids[i]);
+      }
+      controller.value = new AbortController();
+      await homeStore.remove(homeId, controller.value);
+      setToast(`Hogar eliminado con éxito`, "blue");
+      router.push('/home');
+    } catch (e) {
+      setToast(`Ha ocurrido un error al eliminar el hogar: ${e && e.description}`, "red");
+    } finally {
+      setSnackBarTrue();
+      loading.value = false;
+    }
+  }
+
 </script>
 
 <template>
@@ -74,19 +127,19 @@
     <NavBar/>
     <v-main class="bg">
       <v-container class="content_container">
-        <AlarmComponent/>
+        <v-btn size="large" prepend-icon="mdi-delete" class="delete_btn" @click="deleteHome">Eliminar Hogar</v-btn>
       </v-container>
+      <p class="rooms_title">Habitaciones de {{ (homeStore.currentHome && homeStore.currentHome.name) }}</p>
       <v-spacer></v-spacer>
       <v-container class="px-5">
         <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
         <h2 v-else-if="roomStore.rooms.length == 0" class="no_rooms_text">No hay habitaciones creadas</h2>
         <v-row v-else class="rooms_container" cols="2">
-          <v-card v-for="(room) in roomStore.rooms.reverse()"
+          <v-card v-for="(room) in currentRooms"
             class="card_container" 
             @click="navigate(room.id)"
           >
             <p class="card_content" width="50%">{{room.name}}</p>
-            <v-icon size="30" color="#146C94">mdi-heart</v-icon>
           </v-card>
         </v-row>
       </v-container>
@@ -193,6 +246,20 @@ white-space: nowrap;
   margin-left: auto;
   margin-right: auto;
   width: 200px;
+}
+
+.delete_btn {
+  color: #265187;
+  font-family: 'Varela Round', sans-serif;
+  font-size: 16px;
+  
+}
+
+.rooms_title {
+  text-align: center;  
+  font-family: 'Varela Round', sans-serif;
+  font-size: 30px;
+  color: #265187;
 }
 
 </style>

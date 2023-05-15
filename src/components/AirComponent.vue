@@ -10,6 +10,10 @@ const props = defineProps({
   item: Object,
 });
 
+const controller = ref(null);
+const toastOpen = ref(false);
+const toastText = ref('');
+
 const faved = ref(true);
 
 const speedOptions = ref([{
@@ -119,9 +123,11 @@ const decreaseTemp = (item) => {
 
 async function makeAction(action, value) {
     try {
-      await deviceStore.makeAction(item.value.id, action, value);
+        controller.value = new AbortController();
+      await deviceStore.makeAction(item.value.id, action, value, controller.value);
     } catch (e) {
-      // Handlear errores
+        toastText.value = e.description;
+        toastOpen.value = true;
     }
   }
 
@@ -130,12 +136,9 @@ async function makeAction(action, value) {
 
 <template>
     <v-card active="false" class="horizontal_v_list_card">
-        <v-row flexibility="space-between" class="same_line ml-6 mr-6">
-            <v-icon color="#146C94">mdi-air-conditioner</v-icon>
-            <p>{{item.name}}</p>
-            <v-btn :icon="true" variant="flat" color="transparent" @click="toggleFaved">
-                <v-icon>{{ faved ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-            </v-btn>
+        <v-row class="same_line">
+            <v-icon class="mr-3" color="#146C94">mdi-air-conditioner</v-icon>
+            <h4>{{item.name}}</h4>
         </v-row> 
         <v-divider></v-divider>
         <v-row class=" mt-1 ml-2" >
@@ -151,7 +154,7 @@ async function makeAction(action, value) {
             @update:modelValue="(value) => makeAction('setMode', value)"
         />
         <v-col align-center >
-            <p class="same_line"> Temperatura</p>
+            <p>Temperatura</p>
             <v-row class="same_line">
                 <v-btn :icon="true" variant="flat" color="transparent" @click="decreaseTemp(item)">
                     <v-icon>mdi-minus</v-icon>
@@ -182,7 +185,7 @@ async function makeAction(action, value) {
             @update:modelValue="(value) => makeAction('setVerticalSwing', value)"
         />
         <v-select
-        hide-details
+            hide-details
             v-model="item.state.horizontalSwing"
             :items="horOptions"
             item-title="label"
@@ -191,6 +194,15 @@ async function makeAction(action, value) {
             @update:modelValue="(value) => makeAction('setHorizontalSwing', value)"
         />
     </v-card>
+
+    <v-snackbar
+        v-model="toastOpen"
+        timeout=2000
+        color="red"
+        width="auto"
+    >
+        {{ toastText }}
+    </v-snackbar>
 </template>
 
 <style>
@@ -205,14 +217,15 @@ async function makeAction(action, value) {
   flex-direction: column;
 }
 .same_line{
-    justify-content: space-between;
+    justify-content: center;
     margin: 0;
     align-items: center;
     flex-wrap: nowrap;
+    padding: 15px;
 }
 
 .is_on{
-    justify-content: space-between;
+    justify-content: space-around;
     margin: 0;
     align-items: center;
     padding-top: 10px;
