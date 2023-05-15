@@ -8,14 +8,11 @@ import { useDeviceStore } from '@/stores/deviceStore';
 const deviceStore = useDeviceStore();
 const routineStore = useRoutineStore();
 const router = useRouter();
-const open = ref(false);
 const snackbar = ref(false); 
 const toastText = ref(null);
 const controller = ref(null);
 const loading = ref(null);
 const toastColor = ref(null);
-const save = ref(false);
-const currentName = ref();
 
 async function getAllRoutines() {
   try {
@@ -28,6 +25,7 @@ async function getAllRoutines() {
     loading.value = false;
   }
 }
+
 function setToast(text, color) {
     toastColor.value = color;
     toastText.value = text;
@@ -68,7 +66,20 @@ const getActionParam = (id, actionName, actionParam) => {
 onMounted(async () => {
   await getAllRoutines();
 })
+
 const goToRoutineCreation = computed(() => () => router.push('/routinecreation'));
+
+async function executeActions(routine){
+  try {
+      await routineStore.execute(routine.id);
+      setToast(`Rutina ejecutada con éxito`, "blue");
+    } catch (e) {
+      setToast(`Ha ocurrido un error al ejecutar la rutina: ${e && e.description}`, "red");
+    } finally {
+      setSnackBarTrue();
+    }
+}
+
 </script>
 
 <template>
@@ -82,7 +93,12 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
                 <v-card v-for="(routine) in routineStore.routines"
                   class="card_container" 
                 >
-                <v-card-title>{{ routine.name }}</v-card-title> 
+                <v-row class="mt-4 ml-4 mb-2">
+                  <v-card-title>{{ routine.name }}</v-card-title>
+                    <v-btn icon variant="flat" color="transparent">
+                      <v-icon @click="executeActions(routine)">mdi-play-circle-outline</v-icon>
+                    </v-btn>
+               </v-row>
                 <v-card-item v-for="(action) in (routine.actions)" class="cards_columns">
                   <v-card class="card_item">
                     <v-row>
@@ -98,7 +114,7 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
                 </v-card-item>
                 <v-spacer></v-spacer>
                 <v-row class="d-flex align-center flex-column">
-                  <v-btn  icon variant="flat" color="transparent">
+                  <v-btn icon variant="flat" color="transparent">
                   <v-icon @click="deleteRoutine(routine.id)">mdi-delete-outline</v-icon>
                 </v-btn>
                 </v-row>

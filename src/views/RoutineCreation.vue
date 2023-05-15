@@ -168,7 +168,7 @@ async function getAllDevices() {
           <v-card class="card_container">
             <v-list-item>
                 <v-card-title class="title card_title">
-                 <v-text-field v-model="routineStore.currentRoutine.name" /> 
+                 <v-text-field v-if="routineStore.currentRoutine" v-model="routineStore.currentRoutine.name" /> 
                 </v-card-title>
                 <template v-slot:append>
                   <v-btn @click="createRoutine" :disabled="(!routineStore.currentRoutine || routineStore.currentRoutine.actions.length == 0)" plain>Crear Rutina</v-btn>

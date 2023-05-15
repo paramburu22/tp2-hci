@@ -22,7 +22,7 @@ class RoutineApi {
     }
 
     static async execute(routineId) {
-      return await Api.post(`${Api.baseUrl}/rooms/${routineId}/execute`);
+      return await Api.put(`${Api.baseUrl}/routines/${routineId}/execute`);
     }
 
     static async getRoutine(routineId) {
