@@ -11,10 +11,6 @@ const props = defineProps({
 
 const { item } = toRefs(props);
 
-const toggleFaved = (item) => {
-    item.faved = !item.faved;
-}
-
 const toastOpen = ref(false);
 const toastText = ref('');
 
@@ -23,7 +19,7 @@ async function makeAction(action, value) {
     try {
       await deviceStore.makeAction(item.value.id, action, value);
     } catch (e) {
-      toastText.value = e.description;
+      toastText.value = `Ha ocurrido un error realizando la acción: ${e && e.description}`;
       toastOpen.value = true;
     }
   }

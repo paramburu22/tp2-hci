@@ -14,8 +14,6 @@ const controller = ref(null);
 const toastOpen = ref(false);
 const toastText = ref('');
 
-const faved = ref(true);
-
 const speedOptions = ref([{
     value: 'auto',
     label: 'Auto'
@@ -100,11 +98,6 @@ const vertOptions = ref([{
 ]);
 
 
-const toggleFaved = () => {
-    faved.value = !faved.value;
-};
-
-
 const increaseTemp = (item) => {
   if (item.state.temperature < 38) {
     item.state.temperature++;
@@ -126,7 +119,7 @@ async function makeAction(action, value) {
         controller.value = new AbortController();
       await deviceStore.makeAction(item.value.id, action, value, controller.value);
     } catch (e) {
-        toastText.value = e.description;
+        toastText.value = `Ha ocurrido un error realizando la acción: ${e && e.description}`;
         toastOpen.value = true;
     }
   }

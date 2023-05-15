@@ -14,8 +14,6 @@ const controller = ref(null);
 const loading = ref(null);
 const toastColor = ref(null);
 
-const toastOpen = ref();
-
 async function getAllRoutines() {
   try {
     loading.value = true;
@@ -23,8 +21,8 @@ async function getAllRoutines() {
     const routines = await routineStore.getAll(controller.value)
     controller.value = null;
   } catch (e) {
-    toastText.value = `Ha ocurrido un error al obtener rutinas: ${e && e.description}`
-    toastOpen.value = open;
+    setToast(`Ha ocurrido un error al obtener rutinas: ${e && e.description}`, "red");
+    setSnackBarTrue();
   } finally {
     loading.value = false;
   }
@@ -38,6 +36,7 @@ async function getAllDevices() {
     controller.value = null
   } catch (e) {
     setToast(`Ha ocurrido un error al obtener los dispositivos: ${e && e.description}`, "red");
+    setSnackBarTrue()
   } finally {
     loading.value = false;
   }
@@ -58,7 +57,7 @@ async function deleteRoutine(routineId) {
       await routineStore.remove(routineId);
       setToast(`Rutina eliminada con éxito`, "blue");
     } catch (e) {
-      setToast(`Error al eliminar la rutina`, "#FF6666");
+      setToast(`Ha ocurrido un error al eliminar la rutina: ${e && e.description}`, "red");
     } finally {
       setSnackBarTrue();
       loading.value = false;
@@ -140,12 +139,12 @@ async function executeActions(routine){
                 </v-card>
               </v-row>
           </v-container> 
-          <v-icon class="add_icon" @click="goToRoutineCreation">mdi-plus-circle-outline</v-icon>
+          <v-icon class="add_icon" color="white" @click="goToRoutineCreation">mdi-plus-circle-outline</v-icon>
       </v-main>
       <v-snackbar
-        v-model="toastOpen"
+        v-model="snackbar"
         timeout=2000
-        color="red"
+        :color="toastColor"
         width="auto"
       >
         {{ toastText }}

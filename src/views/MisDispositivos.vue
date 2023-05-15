@@ -47,7 +47,7 @@
       await roomStore.addRoomToHome(homeId, room.value.id);
       setToast(`Habitación creada "${capitalizedRoom}" con éxito`, "blue");
     } catch (e) {
-      setToast(`Ha ocurrido un error al crear la habitación "${capitalizedRoom}": ${e.description}`, "red");
+      setToast(`Ha ocurrido un error al crear la habitación "${capitalizedRoom}": ${e && e.description}`, "red");
     } finally {
       toggleOpen();
       setSnackBarTrue();
@@ -144,7 +144,7 @@
         </v-row>
       </v-container>
       <v-container>
-        <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle</v-icon>
+        <v-icon class="add_icon" color="white" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
       </v-container>
     </v-main>
   </v-layout>

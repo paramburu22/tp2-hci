@@ -1,6 +1,5 @@
 <script setup>
   import NavBar from '../components/NavBarComponent.vue';
-  import AlarmComponent from '../components/AlarmComponent.vue';
 
   import { useRouter } from 'vue-router';
   import { ref, onMounted } from 'vue';
@@ -41,7 +40,7 @@
       home.value = await homeStore.add(home, controller.value);
       setToast(`Hogar creado "${capitalizedHome}" con éxito`, "blue");
     } catch (e) {
-      setToast(`Ha ocurrido un error al crear el hogar "${capitalizedHome}": ${e.description}`, "red");
+      setToast(`Ha ocurrido un error al crear el hogar "${capitalizedHome}": ${e && e.description}`, "red");
     } finally {
       toggleOpen();
       setSnackBarTrue();
@@ -54,9 +53,9 @@
       loading.value = true;
       controller.value = new AbortController()
       const homes = await homeStore.getAll(controller.value)
-      controller.value = null
+      controller.value = null;
     } catch (e) {
-      setToast(`Ha ocurrido un error al obtener hogares: ${e.description}`, "red");
+      setToast(`Ha ocurrido un error al obtener hogares: ${e && e.description}`, "red");
     } finally {
       loading.value = false;
     }
@@ -94,7 +93,7 @@
 
       </v-container>
       <v-container>
-        <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle</v-icon>
+        <v-icon class="add_icon" color="white" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
       </v-container>
     </v-main>
   </v-layout>

@@ -214,7 +214,7 @@ async function createDevice() {
                     </v-row>
                   </v-card>
                 </v-container> 
-          <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
+          <v-icon class="add_icon" color="white" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
         </v-main>
     </v-layout>
     <v-dialog

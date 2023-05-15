@@ -39,19 +39,11 @@ import { useDeviceStore } from '@/stores/deviceStore';
     });
 
   const { item } = toRefs(props);
-
-  let intervalId;
-  let newState;
   
   const playlist = ref([]);
 
   const toastOpen = ref(false);
   const toastText = ref('');
-
-
-  const toggleFaved = () => {
-      item.faved = !item.faved;
-  };
 
   function toggleOpen() {
       open.value = !open.value;
@@ -81,7 +73,10 @@ import { useDeviceStore } from '@/stores/deviceStore';
         .then((value) => {
           item.value.state = value;
         })
-        .catch(() => {}) //hacer error
+        .catch((e) => {
+          toastText.value = `Ha ocurrido un error realizando la acción: ${e && e.description}`;
+          toastOpen.value = true;
+        })
     }, 1000);
   };
 
@@ -99,7 +94,10 @@ import { useDeviceStore } from '@/stores/deviceStore';
         .then((value) => {
           item.value.state = value;
         })
-        .catch(() => {}) //hacer error
+        .catch((e) => {
+          toastText.value = `Ha ocurrido un error obteniendo el estado del dispositivo: ${e && e.description}`;
+          toastOpen.value = true;
+        })
     }, 1000);
   };
 
@@ -136,7 +134,7 @@ import { useDeviceStore } from '@/stores/deviceStore';
     try {
       await deviceStore.makeAction(item.value.id, action, value).then(value => response = value);
     } catch (e) {
-      toastText.value = e.description;
+      toastText.value = `Ha ocurrido un error obteniendo el estado del dispositivo: ${e && e.description}`;
       toastOpen.value = true;
     }
     return response;
@@ -150,7 +148,10 @@ import { useDeviceStore } from '@/stores/deviceStore';
         .then((value) => {
           item.value.state = value;
         })
-        .catch(() => {}) //hacer error
+        .catch((e) => {
+          toastText.value = `Ha ocurrido un error obteniendo el estado del dispositivo: ${e && e.description}`;
+          toastOpen.value = true;
+        })
       }, 1000);
     }
   })

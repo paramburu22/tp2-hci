@@ -80,7 +80,7 @@ async function getAllDevices() {
     const routine = new Routine(null, routineStore.currentRoutine.name, routineStore.currentRoutine.actions);
       try {
         routine.value = await routineStore.add(routine);
-        setToast(`Rutina con éxito`, "blue");
+        setToast(`Rutina creada con éxito`, "blue");
         router.push('/myroutines');
       } catch (e) {
         setToast(`Ha ocurrido un error al crear la rutina: ${e && e.description}`, "red");
@@ -201,7 +201,7 @@ async function getAllDevices() {
             </v-row>
           </v-card>
         </v-container> 
-      <v-icon class="add_icon" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
+      <v-icon class="add_icon" color="white" @click="toggleOpen">mdi-plus-circle-outline</v-icon>
     </v-main>
   </v-layout>
   <v-dialog v-model="open" width="auto">
