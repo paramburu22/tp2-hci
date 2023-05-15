@@ -34,10 +34,6 @@ const devicesOptions = ref([
     name: 'Aire Acondicionado',
   },
   {
-    id: 'ofglvd9gqx8yfl3l',
-    name: 'Aspiradora',
-  },
-  {
     id:'im77xxyulpegfmv8',
     name:'Horno',
   },
