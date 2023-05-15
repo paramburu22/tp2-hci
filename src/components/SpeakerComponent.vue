@@ -5,6 +5,7 @@ import { useDeviceStore } from '@/stores/deviceStore';
 
   const open = ref(false);
 
+  let intervalId;
   const genres = [ 
       {
           name: 'Clasica',
@@ -158,7 +159,9 @@ import { useDeviceStore } from '@/stores/deviceStore';
 
 
   onUnmounted(() => {
-    clearInterval(intervalId);
+    if(intervalId) {
+      clearInterval(intervalId);
+    }
   })
 </script>
 

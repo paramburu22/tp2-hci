@@ -1,15 +1,16 @@
 <script setup>
   import NavBar from '../components/NavBarComponent.vue';
-  import AlarmComponent from '../components/AlarmComponent.vue';
 
   import { useRouter } from 'vue-router';
   import { ref, onMounted, computed } from 'vue';
   import { useRoomStore } from '@/stores/roomStore';
   import { useHomeStore } from '@/stores/homeStore';
+  import { useDeviceStore } from '@/stores/deviceStore';
   import { Room } from '@/api/room'
 
   const roomStore = useRoomStore();
   const homeStore = useHomeStore();
+  const deviceStore = useDeviceStore();
 
   const router = useRouter();
 
@@ -55,6 +56,19 @@
     }
   }
 
+  async function getAllDevices() {
+    try {
+      loading.value = true;
+      controller.value = new AbortController()
+      const devices = await deviceStore.getAll(controller.value)
+      controller.value = null
+    } catch (e) {
+      setToast(`Ha ocurrido un error al traer los dispositivos: ${e && e.description}`, "red");
+    } finally {
+      loading.value = false;
+    }
+  }
+
   async function getAllRooms() {
     try {
       loading.value = true;
@@ -84,14 +98,30 @@
   onMounted(async () => {
     await getAllRooms();
     await getHome();
+    if(!deviceStore.devices) {
+      await getAllDevices();
+    }
   })
 
   function navigate(roomId) {
     return router.push(`/room/${roomId}`);
   }
 
+
+  async function deleteDevice(id) {
+    try {
+      await deviceStore.remove(id);
+      setToast(`Dispositivo eliminado con éxito`, "blue");
+    } catch (e) {
+      setToast(`Ha ocurrido un error al eliminar el dispositivo: ${e && e.description}`, "red");
+    } finally {
+      setSnackBarTrue();
+    }
+  }
+
   async function deleteRoom(id) {
     try {
+      loading.value = true;
       await roomStore.remove(id);
       setToast(`Habitacion eliminada con éxito`, "blue");
     } catch (e) {
@@ -103,9 +133,15 @@
 
   async function deleteHome() {
     try {
-      const ids = currentRooms.value.map(device => device.id);
       loading.value = true;
+      const ids = currentRooms.value.map(device => device.id);
       for(let i = 0 ; i < ids.length ; i++) {
+        for(let j = 0 ; j < deviceStore.devices.length ; j++) {
+          const deviceRoom = deviceStore.devices[j].room;
+          if((deviceRoom && deviceRoom.id) === ids[i]) {
+            await deleteDevice(deviceStore.devices[j].id);
+          }
+        }
         await deleteRoom(ids[i]);
       }
       controller.value = new AbortController();
