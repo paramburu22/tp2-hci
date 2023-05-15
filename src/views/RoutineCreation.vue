@@ -168,7 +168,7 @@ async function getAllDevices() {
           <v-card class="card_container">
             <v-list-item>
                 <v-card-title class="title card_title">
-                  <v-text-field v-model="routineName" />
+                 <v-text-field v-model="routineStore.currentRoutine.name" /> 
                 </v-card-title>
                 <template v-slot:append>
                   <v-btn @click="createRoutine" :disabled="(!routineStore.currentRoutine || routineStore.currentRoutine.actions.length == 0)" plain>Crear Rutina</v-btn>
@@ -231,7 +231,7 @@ async function getAllDevices() {
         }"
       />
       <div v-show="(newActionParams && newActionParams.params) === 1">
-        <v-color-picker v-if="newAction === 'setColor'" v-model="newActionParamsValue"/>
+        <v-color-picker show-swatches v-if="newAction === 'setColor'" v-model="newActionParamsValue"/>
         <div v-if="(newActionParams && newActionParams.component) === 'slider'">
           <p>{{`${newActionParams.title}: ${newActionParamsValue || 0}` }}</p>
           <v-slider :step="newActionParams.step" :min="newActionParams.min" :max="newActionParams.max" v-model="newActionParamsValue" />
@@ -271,7 +271,7 @@ async function getAllDevices() {
           </v-btn>
         </v-row>
       </div>
-      <v-row class="buttons_container" no-gutters>
+      <v-row class="buttons_container mt-2" no-gutters>
         <v-btn @click="toggleOpen" plain>Cerrar</v-btn>
         <v-btn tonal color="blue" @click="addRoutineAction">Crear</v-btn>
       </v-row>

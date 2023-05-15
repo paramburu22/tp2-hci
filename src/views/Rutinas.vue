@@ -8,11 +8,14 @@ import { useDeviceStore } from '@/stores/deviceStore';
 const deviceStore = useDeviceStore();
 const routineStore = useRoutineStore();
 const router = useRouter();
-
+const open = ref(false);
+const snackbar = ref(false); 
+const toastText = ref(null);
+const controller = ref(null);
 const loading = ref(null);
+const toastColor = ref(null);
 const save = ref(false);
 const currentName = ref();
-const controller = ref();
 
 async function getAllRoutines() {
   try {
@@ -25,6 +28,42 @@ async function getAllRoutines() {
     loading.value = false;
   }
 }
+function setToast(text, color) {
+    toastColor.value = color;
+    toastText.value = text;
+  }
+
+  function setSnackBarTrue() {
+    snackbar.value = true;
+  } 
+
+async function deleteRoutine(routineId) {
+    try {
+      loading.value = true;
+      await routineStore.remove(routineId);
+      setToast(`Rutina eliminada con éxito`, "blue");
+    } catch (e) {
+      setToast(`Error al eliminar la rutina`, "#FF6666");
+    } finally {
+      setSnackBarTrue();
+      loading.value = false;
+    }
+  }
+
+const getActionValue = (id, actionName) => {
+  const deviceTypeId = deviceStore.devices.find(device => device.id === id).type.id;
+  return routineStore.allActions.find(action => action.id === deviceTypeId).actions.find(action => action.name === actionName).value;
+};
+
+const getActionParam = (id, actionName, actionParam) => {
+  const deviceTypeId = deviceStore.devices.find(device => device.id === id).type.id;
+  const action = routineStore.allActions.find(device => device.id === deviceTypeId).actions.find(action => (action.name === actionName && action.component === 'select'));
+  if(action) {
+    const finalAction = action.options.find(option => option.value === actionParam);
+    return finalAction.label;
+  }
+  return actionParam
+};
 
 onMounted(async () => {
   await getAllRoutines();
@@ -42,8 +81,28 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
               <v-row v-else class="rooms_container">
                 <v-card v-for="(routine) in routineStore.routines"
                   class="card_container" 
-                  @click="navigate(routine.id)"
                 >
+                <v-card-title>{{ routine.name }}</v-card-title> 
+                <v-card-item v-for="(action) in (routine.actions)" class="cards_columns">
+                  <v-card class="card_item">
+                    <v-row>
+                      <v-col>
+                        <p class="title ml-3 mt-2">{{action.name || deviceStore.devices.find(device => device.id === action.device.id).name}}</p>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <p class="subtitle">{{`${getActionValue(action.device.id, action.actionName)}${action.params.length > 0 ? ' : ' + getActionParam(action.device.id, action.actionName, action.params[0]) : '' }`}}</p>
+                    </v-row>
+                  </v-card> 
+                  
+                </v-card-item>
+                <v-spacer></v-spacer>
+                <v-row class="d-flex align-center flex-column">
+                  <v-btn  icon variant="flat" color="transparent">
+                  <v-icon @click="deleteRoutine(routine.id)">mdi-delete-outline</v-icon>
+                </v-btn>
+                </v-row>
+               
                 </v-card>
               </v-row>
           </v-container> 
@@ -74,12 +133,10 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
   border-radius: 20px;
   background-color: #d5dbe0;
   margin-top: 35px;
-  min-height: 400px;
-  min-width: 400px;
-  max-width: 90%;
   padding-bottom: 30px;
   margin-left: 30px;
   margin-right: 15px;
+  height: 100%;
   font-family: 'Varela Round', sans-serif, bold;
   color: rgb(20, 108, 148);
 }
@@ -108,10 +165,9 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
   background-color: white;
   border-radius: 20px;
   opacity: 1 !important;
-  width: 250px;
-  display: flex;
-  flex-direction: column;
   justify-content: space-between;
+  width: 350px;
+  height: 80px;
 }
 .add_icon {
   position: fixed;
@@ -140,5 +196,24 @@ const goToRoutineCreation = computed(() => () => router.push('/routinecreation')
   width: 200px;
 }
 
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  color: grey;
+  margin-left: 30px;
+}
+
+.rooms_container {
+  gap: 25px;
+  margin: 0;
+  justify-content: flex-start;
+}
 
 </style>
