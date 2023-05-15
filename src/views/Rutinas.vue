@@ -104,6 +104,7 @@ async function executeActions(routine){
       <NavBarComponent />
       <v-main class="bg"> 
           <v-container>
+            <h1 class="no_rooms_text">Mis rutinas</h1>
              <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
               <h2 v-else-if="!(routineStore.routines || routineStore.routines.length == 0)" class="no_rooms_text">No hay rutinas creadas</h2>
               <v-row v-else class="rooms_container">
