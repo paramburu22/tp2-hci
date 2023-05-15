@@ -169,7 +169,7 @@
       <v-spacer></v-spacer>
       <v-container class="px-5">
         <img v-if="loading" src="@/assets/loading.gif" alt="loading" class="center" />
-        <h2 v-else-if="roomStore.rooms.length == 0" class="no_rooms_text">No hay habitaciones creadas</h2>
+        <h2 v-else-if="currentRooms.length === 0" class="no_rooms_text">No hay habitaciones creadas</h2>
         <v-row v-else class="rooms_container" cols="2">
           <v-card v-for="(room) in currentRooms"
             class="card_container" 
