@@ -24,7 +24,6 @@ const controller = ref(null);
 const loading = ref(null);
 const toastColor = ref(null);
 const save = ref(false);
-const currentName = ref();
 
 const roomId = router.currentRoute.value.path.split('/')[2];
 
@@ -144,11 +143,7 @@ async function createDevice() {
     }
   }
 
-  const updateContent = (e)  => {
-    save.value = true;
-    const inputText = e.target.innerText;
-    currentName.value = inputText;
-  }
+  const onTitleChange = (e)  => save.value = true;
 
   const goBack = computed(() => (() => {
     loading.value = true;
@@ -157,7 +152,7 @@ async function createDevice() {
 
   async function editRoom () {
     try {
-      await roomStore.modify(roomId, currentName.value.trim());
+      await roomStore.modify(roomId, roomStore.currentRoom.name);
       setToast(`Habitación editada con éxito`, "blue");
     } catch (e) {
       setToast(`Ha ocurrido un error al editar la habitación: ${e && e.description}`, "red");
@@ -175,14 +170,12 @@ async function createDevice() {
         <v-main class="bg"> 
             <v-container>
                 <v-card class="card_container">
-                    <v-list-item class="card_title">
-                        <div class="edit_title">
-                          <v-card-item width="70%" contenteditable @input="updateContent($event)" class="title">
-                            {{(roomStore.currentRoom && roomStore.currentRoom.name)}}
-                          </v-card-item>
-                          <v-btn @click="editRoom" :disabled="!save" plain>Guardar</v-btn>
-                        </div>
+                    <v-list-item>
+                          <v-card-title class="title card_title">
+                            <v-text-field v-if="roomStore.currentRoom" v-model="roomStore.currentRoom.name" @update:modelValue="onTitleChange"/> 
+                          </v-card-title>
                         <template v-slot:append>
+                          <v-btn @click="editRoom" :disabled="!save" plain>Guardar</v-btn>
                             <v-btn variant="text" size="x-large" icon @click="deleteRoom">
                               <v-icon color="red">mdi-delete</v-icon>
                             </v-btn>
@@ -263,10 +256,6 @@ async function createDevice() {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 15px;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
 }
 
 .edit_title {
@@ -286,9 +275,16 @@ async function createDevice() {
   color: rgb(20, 108, 148);
 }
 
+
 .card_title {
-  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: black;
+  margin-top: 10px;
+  width: 50%;
 }
+
 .cards_render {
   padding-left: 20px;
   padding-right: 20px;

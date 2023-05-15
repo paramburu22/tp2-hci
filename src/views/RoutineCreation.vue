@@ -305,12 +305,6 @@ async function getAllDevices() {
   align-items: center;
   justify-content: flex-start;
 }
-.editable_title {
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
-  color: black;
-}
 
 .card_title {
   display: flex;
